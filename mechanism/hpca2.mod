@@ -1,0 +1,192 @@
+NEURON {
+	SUFFIX hpca2
+	USEION ca READ cao, ica, cai  WRITE cai, ica
+	USEION k READ ek WRITE ik
+	RANGE HPCA_m_z, ca, ca1, ca2, ca3, ca_avg, ica_pmp, ica_basal, gbar, ik
+	GLOBAL Volume,Ra, cai0,  Rb, caix,q10, temp, tadj, vmin, vmax
+	THREADSAFE
+}
+
+DEFINE N 4 : no. of shells 
+
+UNITS {
+	(molar) = (1/liter)
+	(mol) = (1)
+	(mM) = (millimolar)
+	(um) = (micron)
+	(mA) = (milliamp)
+	FARADAY = (faraday) (10000 coulomb)
+	PI = (pi) (1)
+	(pS) = (picosiemens)
+}
+
+PARAMETER {
+	k1HPCA = 11.236 (/mM-ms)
+	k2HPCA = 0.01 (/ms)
+	k3HPCA = 8.51 (/mM-ms)
+	k4HPCA = 0.01 (/ms)
+	k7HPCA = 0.01 (/ms) : insertion to the membrane
+	k8HPCA = 0.002 (/ms) : uninsertion from the membrane
+	TotalHPCA = 0.03821 (mM)
+	
+	Bufer0 = 0.180 (mM) : initial concentration of the buffer
+	k1bufer = 10 (/mM-ms)
+	k2bufer = 1 (/ms)
+	
+	k1Pump = 1 (/mM-ms)
+	k2Pump = 0.0003 (/ms)
+	k3Pump = 1 (/ms)
+	k4Pump = 0.0003 (/mM-ms)
+	TotalPump = 1e-11 (mol/cm2)
+	cai0 = 100e-6 (mM) : initial [Ca2+]_i, 110 * 10^(-6) mM = 110 nM.
+	tau_d = 200 (ms)
+	delta = 0.1 (um)
+	
+	gbar = 600   	(pS/um2) : where does this come from? = 60 mS / cm2 = 0.06 S/cm2
+	caix = 1
+	Ra   = 0.01	(cm2/mol-ms)
+	Rb   = 0.02	(/ms)
+	temp = 36	(degC)
+	q10  = 2.3        : temperature adjustment parameter
+	vmin = -120	(mV)
+	vmax = 100	(mV)
+}
+
+ASSIGNED {
+	diam	(um)
+	ica		(mA/cm2)
+    drive_channels (mM/ms)
+	cai		(mM)
+	Volume[N] (um2)
+	B0      (mM)
+	HP0   (mM)
+	cao (mM)
+	ica_pmp (mA/cm2)
+	ica_basal (mA/cm2)
+    ica_pmp_last (mA/cm2) 
+	parea (um)
+	a		(/ms)
+	b		(/ms)
+	ik 		(mA/cm2)
+	gk		(pS/um2)
+	ek		(mV)
+	ninf
+	ntau 		(ms)	
+	tadj
+}
+
+CONSTANT { volo = 1e10 (um2) }
+
+STATE {
+	ca 			    (mM)	    <1e-6>
+	HPCA  		    (mM)
+	CaHPCA  		(mM)
+	Ca2HPCA 		(mM)
+	HPCA_m          (mol/cm2)   <1e-16>
+	
+	pump            (mol/cm2)   <1e-16>
+	pumpca          (mol/cm2)   <1e-16>
+	n
+	
+	HPCA_z          (mM)
+	CaHPCA_z        (mM)
+	Ca2HPCA_z       (mM)
+	HPCA_m_z        (mM)
+	HPCA_tot_z      (mM)
+	
+	Bufer           (mM)
+	CaBufer         (mM)
+}
+
+LOCAL factors_done
+INITIAL {
+	MUTEXLOCK
+	if (factors_done == 0) {
+		factors_done = 1
+		factors()
+	}
+	MUTEXUNLOCK
+	cai = cai0
+	B0 =  Bufer0/(1 + (cai*k1bufer/k2bufer))
+	FROM i=0 TO N-1 {
+		ca = cai
+		HPCA = TotalHPCA
+		Bufer = B0
+		CaBufer = Bufer0 - B0
+	}
+	parea = PI*diam
+	pump = TotalPump/(1 + (cai*k1Pump/k2Pump))
+	pumpca = TotalPump - pump
+	ica_pmp_last = 0
+	rates()
+	n = ninf
+}
+BREAKPOINT { 
+	SOLVE scheme1 METHOD sparse
+	ica_pmp_last = ica_pmp
+	ica = ica_pmp 
+	SOLVE states1 METHOD cnexp
+	gk = tadj*gbar*n
+	ik = (1e-4) * gk * (v - ek) : (1e-4) converts pS/um2 to S/cm2
+}
+
+
+DERIVATIVE states1 {
+	cai = ca + cai0/2
+	rates()
+	n' =  (ninf-n)/ntau
+}
+
+
+LOCAL dsq, dsqvol, Vol
+KINETIC scheme1 {
+    Vol = diam*diam*(Volume[0] + Volume[1] + Volume[2] + Volume[3])
+    : multiplies right hand-sides of diff. equations by the volume
+    COMPARTMENT (1e10)*parea {pump pumpca HPCA_m}
+    COMPARTMENT volo {cao}
+    COMPARTMENT Vol {ca HPCA CaHPCA Ca2HPCA Bufer CaBufer}
+    
+    : kinetic equations for the Ca2+-ATPase
+    ~ ca + pump <-> pumpca (k1Pump*parea*(1e10), k2Pump*parea*(1e10))
+    ~ pumpca <-> pump + cao (k3Pump*parea*(1e10), k4Pump*parea*(1e10))
+    CONSERVE pump + pumpca = TotalPump * parea * (1e10)
+    ica_pmp = 2*FARADAY*(f_flux - b_flux)/parea
+    : ica_pmp is the "new" value, but cashell must be 
+    : computed using the "old" value, i.e. ica_pmp_last
+    : all currents except pump
+    ~ ca << (-(ica - ica_pmp_last)*PI*diam/(2*FARADAY))
+
+    ~ ca + HPCA <-> CaHPCA (k1HPCA*Vol, k2HPCA*Vol)
+    ~ ca + CaHPCA <-> Ca2HPCA (k3HPCA*Vol, k4HPCA*Vol)
+    ~ ca + Bufer <-> CaBufer (k1bufer*Vol, k2bufer*Vol)
+    ~ Ca2HPCA <-> HPCA_m (k7HPCA*Vol, k8HPCA*parea*(1e10)) 
+
+    HPCA_z = HPCA*Vol
+    CaHPCA_z = CaHPCA*Vol
+    Ca2HPCA_z = Ca2HPCA*Vol
+    HPCA_m_z = HPCA_m*parea*(1e10)
+    HPCA_tot_z = HPCA_z + CaHPCA_z + Ca2HPCA_z + HPCA_m_z
+}
+
+
+PROCEDURE rates() {  
+	a = Ra * HPCA_m * parea*(1e11)
+	b = Rb
+	tadj = q10^((celsius - temp)/10)
+	ntau = 1/tadj/(a+b)
+	ninf = a/(a+b)
+}
+
+PROCEDURE factors() {
+	LOCAL r, dr2
+	r = 1/2
+	dr2 = r/(N-1)/2
+	Volume[0] = 0 
+    FROM i=0 TO N-2 {
+		Volume[i] = Volume[i] + PI*(r-dr2/2)*2*dr2
+		r = r - dr2
+		r = r - dr2
+		Volume[i+1] = PI*(r+dr2/2)*2*dr2
+	}
+}
+

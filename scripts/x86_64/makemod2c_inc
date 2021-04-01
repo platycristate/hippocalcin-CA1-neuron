@@ -1,0 +1,209 @@
+
+./cad.c: ../mechanism//cad.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) cad.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./cad.o: ./cad.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./cagk.c: ../mechanism//cagk.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) cagk.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./cagk.o: ./cagk.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./calH.c: ../mechanism//calH.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) calH.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./calH.o: ./calH.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./cal.c: ../mechanism//cal.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) cal.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./cal.o: ./cal.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./car.c: ../mechanism//car.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) car.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./car.o: ./car.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./cat.c: ../mechanism//cat.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) cat.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./cat.o: ./cat.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./d3.c: ../mechanism//d3.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) d3.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./d3.o: ./d3.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./gabaa.c: ../mechanism//gabaa.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) gabaa.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./gabaa.o: ./gabaa.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./gabab.c: ../mechanism//gabab.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) gabab.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./gabab.o: ./gabab.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./glutamate.c: ../mechanism//glutamate.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) glutamate.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./glutamate.o: ./glutamate.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./hha2.c: ../mechanism//hha2.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) hha2.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./hha2.o: ./hha2.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./hha_old.c: ../mechanism//hha_old.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) hha_old.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./hha_old.o: ./hha_old.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./h.c: ../mechanism//h.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) h.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./h.o: ./h.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./hpca2.c: ../mechanism//hpca2.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) hpca2.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./hpca2.o: ./hpca2.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./hpca3.c: ../mechanism//hpca3.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) hpca3.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./hpca3.o: ./hpca3.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./ipulse2.c: ../mechanism//ipulse2.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) ipulse2.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./ipulse2.o: ./ipulse2.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./kadist.c: ../mechanism//kadist.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) kadist.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./kadist.o: ./kadist.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./kaprox.c: ../mechanism//kaprox.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) kaprox.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./kaprox.o: ./kaprox.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./kca.c: ../mechanism//kca.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) kca.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./kca.o: ./kca.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./km.c: ../mechanism//km.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) km.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./km.o: ./km.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./nap.c: ../mechanism//nap.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) nap.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./nap.o: ./nap.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./ncx.c: ../mechanism//ncx.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) ncx.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./ncx.o: ./ncx.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./nmda.c: ../mechanism//nmda.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) nmda.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./nmda.o: ./nmda.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./SimpleAMPA_NMDA.c: ../mechanism//SimpleAMPA_NMDA.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) SimpleAMPA_NMDA.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./SimpleAMPA_NMDA.o: ./SimpleAMPA_NMDA.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./somacar.c: ../mechanism//somacar.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) somacar.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./somacar.o: ./somacar.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
+./vecevent.c: ../mechanism//vecevent.mod
+	@printf " -> $(C_GREEN)NMODL$(C_RESET) $<\n"
+	(cd "../mechanism"; MODLUNIT=$(NRNUNITS) $(NOCMODL) vecevent.mod -o "/home/arsentii/hippocalcin/HPCA-CA1/x86_64")
+
+./vecevent.o: ./vecevent.c
+	@printf " -> $(C_GREEN)Compiling$(C_RESET) $<\n"
+	$(COMPILE) -I"../mechanism" $(INCLUDES) -fPIC -c $< -o $@
+
