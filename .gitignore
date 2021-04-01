@@ -1,1 +1,3 @@
 scripts/reproducing-experiments
+scripts/__pycache__
+compile_test.sh
