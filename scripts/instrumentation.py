@@ -32,8 +32,8 @@ def run(dur=None):
     # Set simulation parameters for the experiment
     # initialization
     h.finitialize(h.v_init);
-    h.dt = params['Simulation']['dt'].value
-    h.t = -5000
+    h.dt = 1e1
+    h.t = -1e6
     # if cvode is on, turn it off to do large fixed step
     temp = h.cvode.active()
     if temp != 0:
@@ -45,6 +45,7 @@ def run(dur=None):
     if temp != 0:
         h.cvode.active(1)
     h.t = 0
+    h.dt = params['Simulation']['dt'].value
     if h.cvode.active():
         h.cvode.re_init()
     else:

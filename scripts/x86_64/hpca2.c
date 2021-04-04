@@ -22,7 +22,6 @@ extern int _method3;
 extern double hoc_Exp(double);
 #endif
  
-#include "nmodlmutex.h" 
 #define nrn_init _nrn_init__hpca2
 #define _nrn_initial _nrn_initial__hpca2
 #define nrn_cur _nrn_cur__hpca2
@@ -30,7 +29,6 @@ extern double hoc_Exp(double);
 #define nrn_jacob _nrn_jacob__hpca2
 #define nrn_state _nrn_state__hpca2
 #define _net_receive _net_receive__hpca2 
-#define factors factors__hpca2 
 #define rates rates__hpca2 
 #define states1 states1__hpca2 
 #define scheme1 scheme1__hpca2 
@@ -70,34 +68,37 @@ extern double hoc_Exp(double);
 #define ica _p[19]
 #define drive_channels _p[20]
 #define cai _p[21]
-#define B0 _p[22]
-#define HP0 _p[23]
-#define cao _p[24]
-#define ica_pmp_last _p[25]
-#define parea _p[26]
-#define a _p[27]
-#define b _p[28]
-#define gk _p[29]
-#define ek _p[30]
-#define ninf _p[31]
-#define ntau _p[32]
-#define Dca _p[33]
-#define DHPCA _p[34]
-#define DCaHPCA _p[35]
-#define DCa2HPCA _p[36]
-#define DHPCA_m _p[37]
-#define Dpump _p[38]
-#define Dpumpca _p[39]
-#define Dn _p[40]
-#define DHPCA_z _p[41]
-#define DCaHPCA_z _p[42]
-#define DCa2HPCA_z _p[43]
-#define DHPCA_m_z _p[44]
-#define DHPCA_tot_z _p[45]
-#define DBufer _p[46]
-#define DCaBufer _p[47]
-#define v _p[48]
-#define _g _p[49]
+#define Vol _p[22]
+#define k_ins _p[23]
+#define ica_balance _p[24]
+#define B0 _p[25]
+#define HP0 _p[26]
+#define cao _p[27]
+#define ica_pmp_last _p[28]
+#define parea _p[29]
+#define a _p[30]
+#define b _p[31]
+#define gk _p[32]
+#define ek _p[33]
+#define ninf _p[34]
+#define ntau _p[35]
+#define Dca _p[36]
+#define DHPCA _p[37]
+#define DCaHPCA _p[38]
+#define DCa2HPCA _p[39]
+#define DHPCA_m _p[40]
+#define Dpump _p[41]
+#define Dpumpca _p[42]
+#define Dn _p[43]
+#define DHPCA_z _p[44]
+#define DCaHPCA_z _p[45]
+#define DCa2HPCA_z _p[46]
+#define DHPCA_m_z _p[47]
+#define DHPCA_tot_z _p[48]
+#define DBufer _p[49]
+#define DCaBufer _p[50]
+#define v _p[51]
+#define _g _p[52]
 #define _ion_cao	*_ppvar[0]._pval
 #define _ion_ica	*_ppvar[1]._pval
 #define _ion_cai	*_ppvar[2]._pval
@@ -126,7 +127,6 @@ extern "C" {
  /* external NEURON variables */
  extern double celsius;
  /* declaration of user functions */
- static void _hoc_factors(void);
  static void _hoc_rates(void);
  static int _mechtype;
 extern void _nrn_cacheloop_reg(int, int);
@@ -157,20 +157,21 @@ extern void hoc_reg_nmodl_filename(int, const char*);
  /* connect user functions to hoc names */
  static VoidFunc hoc_intfunc[] = {
  "setdata_hpca2", _hoc_setdata,
- "factors_hpca2", _hoc_factors,
  "rates_hpca2", _hoc_rates,
  0, 0
 };
- #define _zfactors_done _thread[2]._pval[0]
- #define _zdsq _thread[2]._pval[1]
- #define _zdsqvol _thread[2]._pval[2]
- #define _zVol _thread[2]._pval[3]
+ #define _zdsq _thread[2]._pval[0]
+ #define _zdsqvol _thread[2]._pval[1]
+ #define _zr _thread[2]._pval[2]
+ #define _zica_basal _thread[2]._pval[3]
  /* declare global and static user variables */
  static int _thread1data_inuse = 0;
-static double _thread1data[5];
+static double _thread1data[1];
 #define _gth 3
 #define Bufer0 Bufer0_hpca2
- double Bufer0 = 20;
+ double Bufer0 = 0.18;
+#define D D_hpca2
+ double D = 40;
 #define Rb Rb_hpca2
  double Rb = 0.02;
 #define Ra Ra_hpca2
@@ -179,8 +180,6 @@ static double _thread1data[5];
  double TotalPump = 1e-11;
 #define TotalHPCA TotalHPCA_hpca2
  double TotalHPCA = 0.03821;
-#define Volume_hpca2 (_thread1data + 0)
-#define Volume (_thread[_gth]._pval + 0)
 #define caix caix_hpca2
  double caix = 1;
 #define cai0 cai0_hpca2
@@ -199,24 +198,22 @@ static double _thread1data[5];
  double k2bufer = 1;
 #define k1bufer k1bufer_hpca2
  double k1bufer = 10;
-#define k8HPCA k8HPCA_hpca2
- double k8HPCA = 0.002;
-#define k7HPCA k7HPCA_hpca2
- double k7HPCA = 0.01;
+#define k_out k_out_hpca2
+ double k_out = 0.002;
 #define k4HPCA k4HPCA_hpca2
  double k4HPCA = 0.01;
 #define k3HPCA k3HPCA_hpca2
- double k3HPCA = 8.51;
+ double k3HPCA = 16.67;
 #define k2HPCA k2HPCA_hpca2
  double k2HPCA = 0.01;
 #define k1HPCA k1HPCA_hpca2
- double k1HPCA = 11.236;
+ double k1HPCA = 15;
 #define q10 q10_hpca2
  double q10 = 2.3;
 #define tau_d tau_d_hpca2
  double tau_d = 200;
-#define tadj_hpca2 _thread1data[4]
-#define tadj _thread[_gth]._pval[4]
+#define tadj_hpca2 _thread1data[0]
+#define tadj _thread[_gth]._pval[0]
 #define temp temp_hpca2
  double temp = 36;
 #define vmax vmax_hpca2
@@ -232,9 +229,9 @@ static double _thread1data[5];
  "k2HPCA_hpca2", "/ms",
  "k3HPCA_hpca2", "/mM-ms",
  "k4HPCA_hpca2", "/ms",
- "k7HPCA_hpca2", "/ms",
- "k8HPCA_hpca2", "/ms",
+ "k_out_hpca2", "/ms",
  "TotalHPCA_hpca2", "mM",
+ "D_hpca2", "um2/s",
  "Bufer0_hpca2", "mM",
  "k1bufer_hpca2", "/mM-ms",
  "k2bufer_hpca2", "/ms",
@@ -251,7 +248,6 @@ static double _thread1data[5];
  "temp_hpca2", "degC",
  "vmin_hpca2", "mV",
  "vmax_hpca2", "mV",
- "Volume_hpca2", "um2",
  "gbar_hpca2", "pS/um2",
  "ca_hpca2", "mM",
  "HPCA_hpca2", "mM",
@@ -293,9 +289,9 @@ static double _thread1data[5];
  "k2HPCA_hpca2", &k2HPCA_hpca2,
  "k3HPCA_hpca2", &k3HPCA_hpca2,
  "k4HPCA_hpca2", &k4HPCA_hpca2,
- "k7HPCA_hpca2", &k7HPCA_hpca2,
- "k8HPCA_hpca2", &k8HPCA_hpca2,
+ "k_out_hpca2", &k_out_hpca2,
  "TotalHPCA_hpca2", &TotalHPCA_hpca2,
+ "D_hpca2", &D_hpca2,
  "Bufer0_hpca2", &Bufer0_hpca2,
  "k1bufer_hpca2", &k1bufer_hpca2,
  "k2bufer_hpca2", &k2bufer_hpca2,
@@ -318,7 +314,6 @@ static double _thread1data[5];
  0,0
 };
  static DoubVec hoc_vdoub[] = {
- "Volume_hpca2", Volume_hpca2, 4,
  0,0,0
 };
  static double _sav_indep;
@@ -365,11 +360,11 @@ extern Prop* need_memb(Symbol*);
 static void nrn_alloc(Prop* _prop) {
 	Prop *prop_ion;
 	double *_p; Datum *_ppvar;
- 	_p = nrn_prop_data_alloc(_mechtype, 50, _prop);
+ 	_p = nrn_prop_data_alloc(_mechtype, 53, _prop);
  	/*initialize range parameters*/
  	gbar = 600;
  	_prop->param = _p;
- 	_prop->param_size = 50;
+ 	_prop->param_size = 53;
  	_ppvar = nrn_prop_datum_alloc(_mechtype, 9, _prop);
  	_prop->dparam = _ppvar;
  	/*connect ionic variables to this model*/
@@ -421,7 +416,7 @@ extern void _cvode_abstol( Symbol**, double*, int);
   hoc_reg_nmodl_text(_mechtype, nmodl_file_text);
   hoc_reg_nmodl_filename(_mechtype, nmodl_filename);
 #endif
-  hoc_register_prop_size(_mechtype, 50, 9);
+  hoc_register_prop_size(_mechtype, 53, 9);
   hoc_register_dparam_semantics(_mechtype, 0, "ca_ion");
   hoc_register_dparam_semantics(_mechtype, 1, "ca_ion");
   hoc_register_dparam_semantics(_mechtype, 2, "ca_ion");
@@ -441,8 +436,8 @@ extern void _cvode_abstol( Symbol**, double*, int);
  static double FARADAY = 9.64853;
  static double PI = 3.14159;
  static double volo = 1e10;
- /*Top LOCAL _zfactors_done */
- /*Top LOCAL _zdsq , _zdsqvol , _zVol */
+ /*Top LOCAL _zdsq , _zdsqvol , _zr */
+ /*Top LOCAL _zica_basal */
 static int _reset;
 static char *modelname = "";
 
@@ -450,7 +445,6 @@ static int error;
 static int _ninits = 0;
 static int _match_recurse=1;
 static void _modl_cleanup(){ _match_recurse=1;}
-static int factors(_threadargsproto_);
 static int rates(_threadargsproto_);
  
 static int _ode_spec1(_threadargsproto_);
@@ -474,21 +468,21 @@ static int _ode_spec2(_threadargsproto_);
  
 /*CVODE*/
  static int _ode_spec1 (double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt) {int _reset = 0; {
-   cai = ca + cai0 / 2.0 ;
+   cai = ca ;
    rates ( _threadargs_ ) ;
    Dn = ( ninf - n ) / ntau ;
    }
  return _reset;
 }
  static int _ode_matsol1 (double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt) {
- cai = ca + cai0 / 2.0 ;
+ cai = ca ;
  rates ( _threadargs_ ) ;
  Dn = Dn  / (1. - dt*( ( ( ( - 1.0 ) ) ) / ntau )) ;
   return 0;
 }
  /*END CVODE*/
  static int states1 (double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt) { {
-   cai = ca + cai0 / 2.0 ;
+   cai = ca ;
    rates ( _threadargs_ ) ;
     n = n + (1. - exp(dt*(( ( ( - 1.0 ) ) ) / ntau)))*(- ( ( ( ninf ) ) / ntau ) / ( ( ( ( - 1.0 ) ) ) / ntau ) - n) ;
    }
@@ -505,30 +499,33 @@ for(_i=1;_i<9;_i++){
 	_MATELM2(_i, _i) = _dt1;
       
 }  
-_RHS2(1) *= ( _zVol) ;
-_MATELM2(1, 1) *= ( _zVol); 
-_RHS2(2) *= ( _zVol) ;
-_MATELM2(2, 2) *= ( _zVol); 
-_RHS2(3) *= ( _zVol) ;
-_MATELM2(3, 3) *= ( _zVol); 
-_RHS2(4) *= ( _zVol) ;
-_MATELM2(4, 4) *= ( _zVol); 
+_RHS2(1) *= ( Vol) ;
+_MATELM2(1, 1) *= ( Vol); 
+_RHS2(2) *= ( Vol) ;
+_MATELM2(2, 2) *= ( Vol); 
+_RHS2(3) *= ( Vol) ;
+_MATELM2(3, 3) *= ( Vol); 
+_RHS2(4) *= ( Vol) ;
+_MATELM2(4, 4) *= ( Vol); 
 _RHS2(5) *= ( ( 1e10 ) * parea) ;
 _MATELM2(5, 5) *= ( ( 1e10 ) * parea); 
-_RHS2(6) *= ( _zVol) ;
-_MATELM2(6, 6) *= ( _zVol); 
-_RHS2(7) *= ( _zVol) ;
-_MATELM2(7, 7) *= ( _zVol); 
+_RHS2(6) *= ( Vol) ;
+_MATELM2(6, 6) *= ( Vol); 
+_RHS2(7) *= ( Vol) ;
+_MATELM2(7, 7) *= ( Vol); 
 _RHS2(8) *= ( ( 1e10 ) * parea) ;
 _MATELM2(8, 8) *= ( ( 1e10 ) * parea);  }
- _zVol = diam * diam * ( Volume [ 0 ] + Volume [ 1 ] + Volume [ 2 ] + Volume [ 3 ] ) ;
+ _zr = diam / 2.0 ;
+   Vol = PI * _zr * _zr ;
+   _zica_basal = 2.0 * FARADAY * ( k3Pump * TotalPump * cai0 * ( 1e5 ) / ( k2Pump / k1Pump ) ) ;
+   k_ins = ( 1e-3 ) * ( D * 0.1 ) / ( pow( _zr , 2.0 ) ) ;
    /* COMPARTMENT ( 1e10 ) * parea {
      pump pumpca HPCA_m }
    */
  /* COMPARTMENT volo {
      }
    */
- /* COMPARTMENT _zVol {
+ /* COMPARTMENT Vol {
      ca HPCA CaHPCA Ca2HPCA Bufer CaBufer }
    */
  /* ~ ca + pump <-> pumpca ( k1Pump * parea * ( 1e10 ) , k2Pump * parea * ( 1e10 ) )*/
@@ -565,86 +562,86 @@ _MATELM2(8, 8) *= ( ( 1e10 ) * parea);  }
  _RHS2(0) -= pump * ( ( 1e10 ) * parea) ;
  /*CONSERVATION*/
  ica_pmp = 2.0 * FARADAY * ( f_flux - b_flux ) / parea ;
-   /* ~ ca < < ( - ( ica - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) )*/
+   /* ~ ca < < ( - ( ica - _zica_basal - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) )*/
  f_flux = b_flux = 0.;
- _RHS2( 7) += (b_flux =   ( - ( ica - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) ) );
+ _RHS2( 7) += (b_flux =   ( - ( ica - _zica_basal - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) ) );
  /*FLUX*/
-  /* ~ ca + HPCA <-> CaHPCA ( k1HPCA * _zVol , k2HPCA * _zVol )*/
- f_flux =  k1HPCA * _zVol * HPCA * ca ;
- b_flux =  k2HPCA * _zVol * CaHPCA ;
+  /* ~ ca + HPCA <-> CaHPCA ( k1HPCA * Vol , k2HPCA * Vol )*/
+ f_flux =  k1HPCA * Vol * HPCA * ca ;
+ b_flux =  k2HPCA * Vol * CaHPCA ;
  _RHS2( 6) -= (f_flux - b_flux);
  _RHS2( 7) -= (f_flux - b_flux);
  _RHS2( 4) += (f_flux - b_flux);
  
- _term =  k1HPCA * _zVol * ca ;
+ _term =  k1HPCA * Vol * ca ;
  _MATELM2( 6 ,6)  += _term;
  _MATELM2( 7 ,6)  += _term;
  _MATELM2( 4 ,6)  -= _term;
- _term =  k1HPCA * _zVol * HPCA ;
+ _term =  k1HPCA * Vol * HPCA ;
  _MATELM2( 6 ,7)  += _term;
  _MATELM2( 7 ,7)  += _term;
  _MATELM2( 4 ,7)  -= _term;
- _term =  k2HPCA * _zVol ;
+ _term =  k2HPCA * Vol ;
  _MATELM2( 6 ,4)  -= _term;
  _MATELM2( 7 ,4)  -= _term;
  _MATELM2( 4 ,4)  += _term;
  /*REACTION*/
-  /* ~ ca + CaHPCA <-> Ca2HPCA ( k3HPCA * _zVol , k4HPCA * _zVol )*/
- f_flux =  k3HPCA * _zVol * CaHPCA * ca ;
- b_flux =  k4HPCA * _zVol * Ca2HPCA ;
+  /* ~ ca + CaHPCA <-> Ca2HPCA ( k3HPCA * Vol , k4HPCA * Vol )*/
+ f_flux =  k3HPCA * Vol * CaHPCA * ca ;
+ b_flux =  k4HPCA * Vol * Ca2HPCA ;
  _RHS2( 4) -= (f_flux - b_flux);
  _RHS2( 7) -= (f_flux - b_flux);
  _RHS2( 3) += (f_flux - b_flux);
  
- _term =  k3HPCA * _zVol * ca ;
+ _term =  k3HPCA * Vol * ca ;
  _MATELM2( 4 ,4)  += _term;
  _MATELM2( 7 ,4)  += _term;
  _MATELM2( 3 ,4)  -= _term;
- _term =  k3HPCA * _zVol * CaHPCA ;
+ _term =  k3HPCA * Vol * CaHPCA ;
  _MATELM2( 4 ,7)  += _term;
  _MATELM2( 7 ,7)  += _term;
  _MATELM2( 3 ,7)  -= _term;
- _term =  k4HPCA * _zVol ;
+ _term =  k4HPCA * Vol ;
  _MATELM2( 4 ,3)  -= _term;
  _MATELM2( 7 ,3)  -= _term;
  _MATELM2( 3 ,3)  += _term;
  /*REACTION*/
-  /* ~ ca + Bufer <-> CaBufer ( k1bufer * _zVol , k2bufer * _zVol )*/
- f_flux =  k1bufer * _zVol * Bufer * ca ;
- b_flux =  k2bufer * _zVol * CaBufer ;
+  /* ~ ca + Bufer <-> CaBufer ( k1bufer * Vol , k2bufer * Vol )*/
+ f_flux =  k1bufer * Vol * Bufer * ca ;
+ b_flux =  k2bufer * Vol * CaBufer ;
  _RHS2( 1) -= (f_flux - b_flux);
  _RHS2( 7) -= (f_flux - b_flux);
  _RHS2( 2) += (f_flux - b_flux);
  
- _term =  k1bufer * _zVol * ca ;
+ _term =  k1bufer * Vol * ca ;
  _MATELM2( 1 ,1)  += _term;
  _MATELM2( 7 ,1)  += _term;
  _MATELM2( 2 ,1)  -= _term;
- _term =  k1bufer * _zVol * Bufer ;
+ _term =  k1bufer * Vol * Bufer ;
  _MATELM2( 1 ,7)  += _term;
  _MATELM2( 7 ,7)  += _term;
  _MATELM2( 2 ,7)  -= _term;
- _term =  k2bufer * _zVol ;
+ _term =  k2bufer * Vol ;
  _MATELM2( 1 ,2)  -= _term;
  _MATELM2( 7 ,2)  -= _term;
  _MATELM2( 2 ,2)  += _term;
  /*REACTION*/
-  /* ~ Ca2HPCA <-> HPCA_m ( k7HPCA * _zVol , k8HPCA * parea * ( 1e10 ) )*/
- f_flux =  k7HPCA * _zVol * Ca2HPCA ;
- b_flux =  k8HPCA * parea * ( 1e10 ) * HPCA_m ;
+  /* ~ Ca2HPCA <-> HPCA_m ( k_ins * Vol , k_out * parea * ( 1e10 ) )*/
+ f_flux =  k_ins * Vol * Ca2HPCA ;
+ b_flux =  k_out * parea * ( 1e10 ) * HPCA_m ;
  _RHS2( 3) -= (f_flux - b_flux);
  _RHS2( 5) += (f_flux - b_flux);
  
- _term =  k7HPCA * _zVol ;
+ _term =  k_ins * Vol ;
  _MATELM2( 3 ,3)  += _term;
  _MATELM2( 5 ,3)  -= _term;
- _term =  k8HPCA * parea * ( 1e10 ) ;
+ _term =  k_out * parea * ( 1e10 ) ;
  _MATELM2( 3 ,5)  -= _term;
  _MATELM2( 5 ,5)  += _term;
  /*REACTION*/
-  HPCA_z = HPCA * _zVol ;
-   CaHPCA_z = CaHPCA * _zVol ;
-   Ca2HPCA_z = Ca2HPCA * _zVol ;
+  HPCA_z = HPCA * Vol ;
+   CaHPCA_z = CaHPCA * Vol ;
+   Ca2HPCA_z = Ca2HPCA * Vol ;
    HPCA_m_z = HPCA_m * parea * ( 1e10 ) ;
    HPCA_tot_z = HPCA_z + CaHPCA_z + Ca2HPCA_z + HPCA_m_z ;
      } return _reset;
@@ -669,42 +666,21 @@ static void _hoc_rates(void) {
  hoc_retpushx(_r);
 }
  
-static int  factors ( _threadargsproto_ ) {
-   double _lr , _ldr2 ;
- _lr = 1.0 / 2.0 ;
-   _ldr2 = _lr / ( 4.0 - 1.0 ) / 2.0 ;
-   Volume [ 0 ] = 0.0 ;
-   {int  _li ;for ( _li = 0 ; _li <= 4 - 2 ; _li ++ ) {
-     Volume [ _li ] = Volume [ _li ] + PI * ( _lr - _ldr2 / 2.0 ) * 2.0 * _ldr2 ;
-     _lr = _lr - _ldr2 ;
-     _lr = _lr - _ldr2 ;
-     Volume [ _li + 1 ] = PI * ( _lr + _ldr2 / 2.0 ) * 2.0 * _ldr2 ;
-     } }
-    return 0; }
- 
-static void _hoc_factors(void) {
-  double _r;
-   double* _p; Datum* _ppvar; Datum* _thread; _NrnThread* _nt;
-   if (_extcall_prop) {_p = _extcall_prop->param; _ppvar = _extcall_prop->dparam;}else{ _p = (double*)0; _ppvar = (Datum*)0; }
-  _thread = _extcall_thread;
-  _nt = nrn_threads;
- _r = 1.;
- factors ( _p, _ppvar, _thread, _nt );
- hoc_retpushx(_r);
-}
- 
 /*CVODE ode begin*/
  static int _ode_spec2(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt) {int _reset=0;{
  double b_flux, f_flux, _term; int _i;
  {int _i; for(_i=0;_i<9;_i++) _p[_dlist2[_i]] = 0.0;}
- _zVol = diam * diam * ( Volume [ 0 ] + Volume [ 1 ] + Volume [ 2 ] + Volume [ 3 ] ) ;
+ _zr = diam / 2.0 ;
+ Vol = PI * _zr * _zr ;
+ _zica_basal = 2.0 * FARADAY * ( k3Pump * TotalPump * cai0 * ( 1e5 ) / ( k2Pump / k1Pump ) ) ;
+ k_ins = ( 1e-3 ) * ( D * 0.1 ) / ( pow( _zr , 2.0 ) ) ;
  /* COMPARTMENT ( 1e10 ) * parea {
    pump pumpca HPCA_m }
  */
  /* COMPARTMENT volo {
    }
  */
- /* COMPARTMENT _zVol {
+ /* COMPARTMENT Vol {
    ca HPCA CaHPCA Ca2HPCA Bufer CaBufer }
  */
  /* ~ ca + pump <-> pumpca ( k1Pump * parea * ( 1e10 ) , k2Pump * parea * ( 1e10 ) )*/
@@ -725,54 +701,54 @@ static void _hoc_factors(void) {
    /* pump + pumpca = TotalPump * parea * ( 1e10 ) */
  /*CONSERVATION*/
  ica_pmp = 2.0 * FARADAY * ( f_flux - b_flux ) / parea ;
- /* ~ ca < < ( - ( ica - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) )*/
+ /* ~ ca < < ( - ( ica - _zica_basal - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) )*/
  f_flux = b_flux = 0.;
- Dca += (b_flux =   ( - ( ica - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) ) );
+ Dca += (b_flux =   ( - ( ica - _zica_basal - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) ) );
  /*FLUX*/
-  /* ~ ca + HPCA <-> CaHPCA ( k1HPCA * _zVol , k2HPCA * _zVol )*/
- f_flux =  k1HPCA * _zVol * HPCA * ca ;
- b_flux =  k2HPCA * _zVol * CaHPCA ;
+  /* ~ ca + HPCA <-> CaHPCA ( k1HPCA * Vol , k2HPCA * Vol )*/
+ f_flux =  k1HPCA * Vol * HPCA * ca ;
+ b_flux =  k2HPCA * Vol * CaHPCA ;
  DHPCA -= (f_flux - b_flux);
  Dca -= (f_flux - b_flux);
  DCaHPCA += (f_flux - b_flux);
  
  /*REACTION*/
-  /* ~ ca + CaHPCA <-> Ca2HPCA ( k3HPCA * _zVol , k4HPCA * _zVol )*/
- f_flux =  k3HPCA * _zVol * CaHPCA * ca ;
- b_flux =  k4HPCA * _zVol * Ca2HPCA ;
+  /* ~ ca + CaHPCA <-> Ca2HPCA ( k3HPCA * Vol , k4HPCA * Vol )*/
+ f_flux =  k3HPCA * Vol * CaHPCA * ca ;
+ b_flux =  k4HPCA * Vol * Ca2HPCA ;
  DCaHPCA -= (f_flux - b_flux);
  Dca -= (f_flux - b_flux);
  DCa2HPCA += (f_flux - b_flux);
  
  /*REACTION*/
-  /* ~ ca + Bufer <-> CaBufer ( k1bufer * _zVol , k2bufer * _zVol )*/
- f_flux =  k1bufer * _zVol * Bufer * ca ;
- b_flux =  k2bufer * _zVol * CaBufer ;
+  /* ~ ca + Bufer <-> CaBufer ( k1bufer * Vol , k2bufer * Vol )*/
+ f_flux =  k1bufer * Vol * Bufer * ca ;
+ b_flux =  k2bufer * Vol * CaBufer ;
  DBufer -= (f_flux - b_flux);
  Dca -= (f_flux - b_flux);
  DCaBufer += (f_flux - b_flux);
  
  /*REACTION*/
-  /* ~ Ca2HPCA <-> HPCA_m ( k7HPCA * _zVol , k8HPCA * parea * ( 1e10 ) )*/
- f_flux =  k7HPCA * _zVol * Ca2HPCA ;
- b_flux =  k8HPCA * parea * ( 1e10 ) * HPCA_m ;
+  /* ~ Ca2HPCA <-> HPCA_m ( k_ins * Vol , k_out * parea * ( 1e10 ) )*/
+ f_flux =  k_ins * Vol * Ca2HPCA ;
+ b_flux =  k_out * parea * ( 1e10 ) * HPCA_m ;
  DCa2HPCA -= (f_flux - b_flux);
  DHPCA_m += (f_flux - b_flux);
  
  /*REACTION*/
-  HPCA_z = HPCA * _zVol ;
- CaHPCA_z = CaHPCA * _zVol ;
- Ca2HPCA_z = Ca2HPCA * _zVol ;
+  HPCA_z = HPCA * Vol ;
+ CaHPCA_z = CaHPCA * Vol ;
+ Ca2HPCA_z = Ca2HPCA * Vol ;
  HPCA_m_z = HPCA_m * parea * ( 1e10 ) ;
  HPCA_tot_z = HPCA_z + CaHPCA_z + Ca2HPCA_z + HPCA_m_z ;
  _p[_dlist2[0]] /= ( ( 1e10 ) * parea);
- _p[_dlist2[1]] /= ( _zVol);
- _p[_dlist2[2]] /= ( _zVol);
- _p[_dlist2[3]] /= ( _zVol);
- _p[_dlist2[4]] /= ( _zVol);
+ _p[_dlist2[1]] /= ( Vol);
+ _p[_dlist2[2]] /= ( Vol);
+ _p[_dlist2[3]] /= ( Vol);
+ _p[_dlist2[4]] /= ( Vol);
  _p[_dlist2[5]] /= ( ( 1e10 ) * parea);
- _p[_dlist2[6]] /= ( _zVol);
- _p[_dlist2[7]] /= ( _zVol);
+ _p[_dlist2[6]] /= ( Vol);
+ _p[_dlist2[7]] /= ( Vol);
  _p[_dlist2[8]] /= ( ( 1e10 ) * parea);
    } return _reset;
  }
@@ -789,30 +765,33 @@ for(_i=0;_i<9;_i++){
 }  
 _RHS2(0) *= ( ( 1e10 ) * parea) ;
 _MATELM2(0, 0) *= ( ( 1e10 ) * parea); 
-_RHS2(1) *= ( _zVol) ;
-_MATELM2(1, 1) *= ( _zVol); 
-_RHS2(2) *= ( _zVol) ;
-_MATELM2(2, 2) *= ( _zVol); 
-_RHS2(3) *= ( _zVol) ;
-_MATELM2(3, 3) *= ( _zVol); 
-_RHS2(4) *= ( _zVol) ;
-_MATELM2(4, 4) *= ( _zVol); 
+_RHS2(1) *= ( Vol) ;
+_MATELM2(1, 1) *= ( Vol); 
+_RHS2(2) *= ( Vol) ;
+_MATELM2(2, 2) *= ( Vol); 
+_RHS2(3) *= ( Vol) ;
+_MATELM2(3, 3) *= ( Vol); 
+_RHS2(4) *= ( Vol) ;
+_MATELM2(4, 4) *= ( Vol); 
 _RHS2(5) *= ( ( 1e10 ) * parea) ;
 _MATELM2(5, 5) *= ( ( 1e10 ) * parea); 
-_RHS2(6) *= ( _zVol) ;
-_MATELM2(6, 6) *= ( _zVol); 
-_RHS2(7) *= ( _zVol) ;
-_MATELM2(7, 7) *= ( _zVol); 
+_RHS2(6) *= ( Vol) ;
+_MATELM2(6, 6) *= ( Vol); 
+_RHS2(7) *= ( Vol) ;
+_MATELM2(7, 7) *= ( Vol); 
 _RHS2(8) *= ( ( 1e10 ) * parea) ;
 _MATELM2(8, 8) *= ( ( 1e10 ) * parea);  }
- _zVol = diam * diam * ( Volume [ 0 ] + Volume [ 1 ] + Volume [ 2 ] + Volume [ 3 ] ) ;
+ _zr = diam / 2.0 ;
+ Vol = PI * _zr * _zr ;
+ _zica_basal = 2.0 * FARADAY * ( k3Pump * TotalPump * cai0 * ( 1e5 ) / ( k2Pump / k1Pump ) ) ;
+ k_ins = ( 1e-3 ) * ( D * 0.1 ) / ( pow( _zr , 2.0 ) ) ;
  /* COMPARTMENT ( 1e10 ) * parea {
  pump pumpca HPCA_m }
  */
  /* COMPARTMENT volo {
  }
  */
- /* COMPARTMENT _zVol {
+ /* COMPARTMENT Vol {
  ca HPCA CaHPCA Ca2HPCA Bufer CaBufer }
  */
  /* ~ ca + pump <-> pumpca ( k1Pump * parea * ( 1e10 ) , k2Pump * parea * ( 1e10 ) )*/
@@ -836,61 +815,61 @@ _MATELM2(8, 8) *= ( ( 1e10 ) * parea);  }
  _term =  k4Pump * parea * ( 1e10 ) * cao ;
  _MATELM2( 0 ,8)  -= _term;
  _MATELM2( 8 ,8)  += _term;
- /* ~ ca < < ( - ( ica - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) )*/
+ /* ~ ca < < ( - ( ica - _zica_basal - ica_pmp_last ) * PI * diam / ( 2.0 * FARADAY ) )*/
  /*FLUX*/
-  /* ~ ca + HPCA <-> CaHPCA ( k1HPCA * _zVol , k2HPCA * _zVol )*/
- _term =  k1HPCA * _zVol * ca ;
+  /* ~ ca + HPCA <-> CaHPCA ( k1HPCA * Vol , k2HPCA * Vol )*/
+ _term =  k1HPCA * Vol * ca ;
  _MATELM2( 6 ,6)  += _term;
  _MATELM2( 7 ,6)  += _term;
  _MATELM2( 4 ,6)  -= _term;
- _term =  k1HPCA * _zVol * HPCA ;
+ _term =  k1HPCA * Vol * HPCA ;
  _MATELM2( 6 ,7)  += _term;
  _MATELM2( 7 ,7)  += _term;
  _MATELM2( 4 ,7)  -= _term;
- _term =  k2HPCA * _zVol ;
+ _term =  k2HPCA * Vol ;
  _MATELM2( 6 ,4)  -= _term;
  _MATELM2( 7 ,4)  -= _term;
  _MATELM2( 4 ,4)  += _term;
  /*REACTION*/
-  /* ~ ca + CaHPCA <-> Ca2HPCA ( k3HPCA * _zVol , k4HPCA * _zVol )*/
- _term =  k3HPCA * _zVol * ca ;
+  /* ~ ca + CaHPCA <-> Ca2HPCA ( k3HPCA * Vol , k4HPCA * Vol )*/
+ _term =  k3HPCA * Vol * ca ;
  _MATELM2( 4 ,4)  += _term;
  _MATELM2( 7 ,4)  += _term;
  _MATELM2( 3 ,4)  -= _term;
- _term =  k3HPCA * _zVol * CaHPCA ;
+ _term =  k3HPCA * Vol * CaHPCA ;
  _MATELM2( 4 ,7)  += _term;
  _MATELM2( 7 ,7)  += _term;
  _MATELM2( 3 ,7)  -= _term;
- _term =  k4HPCA * _zVol ;
+ _term =  k4HPCA * Vol ;
  _MATELM2( 4 ,3)  -= _term;
  _MATELM2( 7 ,3)  -= _term;
  _MATELM2( 3 ,3)  += _term;
  /*REACTION*/
-  /* ~ ca + Bufer <-> CaBufer ( k1bufer * _zVol , k2bufer * _zVol )*/
- _term =  k1bufer * _zVol * ca ;
+  /* ~ ca + Bufer <-> CaBufer ( k1bufer * Vol , k2bufer * Vol )*/
+ _term =  k1bufer * Vol * ca ;
  _MATELM2( 1 ,1)  += _term;
  _MATELM2( 7 ,1)  += _term;
  _MATELM2( 2 ,1)  -= _term;
- _term =  k1bufer * _zVol * Bufer ;
+ _term =  k1bufer * Vol * Bufer ;
  _MATELM2( 1 ,7)  += _term;
  _MATELM2( 7 ,7)  += _term;
  _MATELM2( 2 ,7)  -= _term;
- _term =  k2bufer * _zVol ;
+ _term =  k2bufer * Vol ;
  _MATELM2( 1 ,2)  -= _term;
  _MATELM2( 7 ,2)  -= _term;
  _MATELM2( 2 ,2)  += _term;
  /*REACTION*/
-  /* ~ Ca2HPCA <-> HPCA_m ( k7HPCA * _zVol , k8HPCA * parea * ( 1e10 ) )*/
- _term =  k7HPCA * _zVol ;
+  /* ~ Ca2HPCA <-> HPCA_m ( k_ins * Vol , k_out * parea * ( 1e10 ) )*/
+ _term =  k_ins * Vol ;
  _MATELM2( 3 ,3)  += _term;
  _MATELM2( 5 ,3)  -= _term;
- _term =  k8HPCA * parea * ( 1e10 ) ;
+ _term =  k_out * parea * ( 1e10 ) ;
  _MATELM2( 3 ,5)  -= _term;
  _MATELM2( 5 ,5)  += _term;
  /*REACTION*/
-  HPCA_z = HPCA * _zVol ;
- CaHPCA_z = CaHPCA * _zVol ;
- Ca2HPCA_z = Ca2HPCA * _zVol ;
+  HPCA_z = HPCA * Vol ;
+ CaHPCA_z = CaHPCA * Vol ;
+ Ca2HPCA_z = Ca2HPCA * Vol ;
  HPCA_m_z = HPCA_m * parea * ( 1e10 ) ;
  HPCA_tot_z = HPCA_z + CaHPCA_z + Ca2HPCA_z + HPCA_m_z ;
    } return _reset;
@@ -902,7 +881,7 @@ static int _ode_count(int _type){ hoc_execerror("hpca2", "cannot be used with CV
  
 static void _thread_mem_init(Datum* _thread) {
    _thread[2]._pval = (double*)ecalloc(4, sizeof(double));
-  if (_thread1data_inuse) {_thread[_gth]._pval = (double*)ecalloc(5, sizeof(double));
+  if (_thread1data_inuse) {_thread[_gth]._pval = (double*)ecalloc(1, sizeof(double));
  }else{
  _thread[_gth]._pval = _thread1data; _thread1data_inuse = 1;
  }
@@ -947,20 +926,12 @@ static void initmodel(double* _p, Datum* _ppvar, Datum* _thread, _NrnThread* _nt
   pumpca = pumpca0;
   pump = pump0;
  {
-   _NMODLMUTEXLOCK
- if ( _zfactors_done  == 0.0 ) {
-     _zfactors_done = 1.0 ;
-     factors ( _threadargs_ ) ;
-     }
-   _NMODLMUTEXUNLOCK
- cai = cai0 ;
+   cai = cai0 ;
    B0 = Bufer0 / ( 1.0 + ( cai * k1bufer / k2bufer ) ) ;
-   {int  _li ;for ( _li = 0 ; _li <= 4 - 1 ; _li ++ ) {
-     ca = cai ;
-     HPCA = TotalHPCA ;
-     Bufer = B0 ;
-     CaBufer = Bufer0 - B0 ;
-     } }
+   ca = cai ;
+   HPCA = TotalHPCA ;
+   Bufer = B0 ;
+   CaBufer = Bufer0 - B0 ;
    parea = PI * diam ;
    pump = TotalPump / ( 1.0 + ( cai * k1Pump / k2Pump ) ) ;
    pumpca = TotalPump - pump ;
@@ -1160,12 +1131,10 @@ static const char* nmodl_file_text =
   "	SUFFIX hpca2\n"
   "	USEION ca READ cao, ica, cai  WRITE cai, ica\n"
   "	USEION k READ ek WRITE ik\n"
-  "	RANGE HPCA_m_z, ca, ca1, ca2, ca3, ca_avg, ica_pmp, ica_basal, gbar, ik\n"
-  "	GLOBAL Volume,Ra, cai0,  Rb, caix,q10, temp, tadj, vmin, vmax\n"
+  "	RANGE HPCA_m_z, ca, ica_pmp, ica_basal, gbar, ik\n"
+  "	GLOBAL Ra, cai0,  Rb, caix,q10, temp, tadj, vmin, vmax\n"
   "	THREADSAFE\n"
   "}\n"
-  "\n"
-  "DEFINE N 4 : no. of shells \n"
   "\n"
   "UNITS {\n"
   "	(molar) = (1/liter)\n"
@@ -1179,15 +1148,16 @@ static const char* nmodl_file_text =
   "}\n"
   "\n"
   "PARAMETER {\n"
-  "	k1HPCA = 11.236 (/mM-ms)\n"
+  "	k1HPCA = 15 (/mM-ms)\n"
   "	k2HPCA = 0.01 (/ms)\n"
-  "	k3HPCA = 8.51 (/mM-ms)\n"
+  "	k3HPCA = 16.67 (/mM-ms)\n"
   "	k4HPCA = 0.01 (/ms)\n"
-  "	k7HPCA = 0.01 (/ms) : insertion to the membrane\n"
-  "	k8HPCA = 0.002 (/ms) : uninsertion from the membrane\n"
+  "	k_out = 0.002 (/ms) : uninsertion from the membrane\n"
   "	TotalHPCA = 0.03821 (mM)\n"
+  "\n"
+  "	D = 40 (um2/s)\n"
   "	\n"
-  "	Bufer0 = 20 (mM) : initial concentration of the buffer\n"
+  "	Bufer0 = 0.180 (mM) : initial concentration of the buffer\n"
   "	k1bufer = 10 (/mM-ms)\n"
   "	k2bufer = 1 (/ms)\n"
   "	\n"
@@ -1211,39 +1181,41 @@ static const char* nmodl_file_text =
   "}\n"
   "\n"
   "ASSIGNED {\n"
-  "	diam	(um)\n"
-  "	ica		(mA/cm2)\n"
-  "    drive_channels (mM/ms)\n"
-  "	cai		(mM)\n"
-  "	Volume[N] (um2)\n"
-  "	B0      (mM)\n"
-  "	HP0   (mM)\n"
-  "	cao (mM)\n"
-  "	ica_pmp (mA/cm2)\n"
-  "	ica_basal (mA/cm2)\n"
-  "    ica_pmp_last (mA/cm2) \n"
-  "	parea (um)\n"
-  "	a		(/ms)\n"
-  "	b		(/ms)\n"
-  "	ik 		(mA/cm2)\n"
-  "	gk		(pS/um2)\n"
-  "	ek		(mV)\n"
-  "	ninf\n"
-  "	ntau 		(ms)	\n"
-  "	tadj\n"
+  "    diam	    (um)\n"
+  "    ica		    (mA/cm2)\n"
+  "    drive_channels  (mM/ms)\n"
+  "    cai		    (mM)\n"
+  "    Vol		    (um2)\n"
+  "    k_ins           (/ms) : insertion of the HPCA to the membrane\n"
+  "    ica_balance	    (mA/cm2)\n"
+  "    B0		    (mM)\n"
+  "    HP0		    (mM)\n"
+  "    cao		    (mM)\n"
+  "    ica_pmp	    (mA/cm2)\n"
+  "    ica_basal	    (mA/cm2)\n"
+  "    ica_pmp_last    (mA/cm2) \n"
+  "    parea (um)\n"
+  "    a		    (/ms)\n"
+  "    b		    (/ms)\n"
+  "    ik		    (mA/cm2)\n"
+  "    gk		    (pS/um2)\n"
+  "    ek		    (mV)\n"
+  "    ninf\n"
+  "    ntau 	    (ms)	\n"
+  "    tadj\n"
   "}\n"
   "\n"
   "CONSTANT { volo = 1e10 (um2) }\n"
   "\n"
   "STATE {\n"
-  "	ca 			    (mM)	    <1e-6>\n"
-  "	HPCA  		    (mM)\n"
-  "	CaHPCA  		(mM)\n"
-  "	Ca2HPCA 		(mM)\n"
-  "	HPCA_m          (mol/cm2)   <1e-16>\n"
+  "	ca 		(mM)	    <1e-6>\n"
+  "	HPCA  		(mM)\n"
+  "	CaHPCA  	(mM)\n"
+  "	Ca2HPCA 	(mM)\n"
+  "	HPCA_m		(mol/cm2)   <1e-16>\n"
   "	\n"
-  "	pump            (mol/cm2)   <1e-16>\n"
-  "	pumpca          (mol/cm2)   <1e-16>\n"
+  "	pump		(mol/cm2)   <1e-16>\n"
+  "	pumpca		(mol/cm2)   <1e-16>\n"
   "	n\n"
   "	\n"
   "	HPCA_z          (mM)\n"
@@ -1256,22 +1228,13 @@ static const char* nmodl_file_text =
   "	CaBufer         (mM)\n"
   "}\n"
   "\n"
-  "LOCAL factors_done\n"
   "INITIAL {\n"
-  "	MUTEXLOCK\n"
-  "	if (factors_done == 0) {\n"
-  "		factors_done = 1\n"
-  "		factors()\n"
-  "	}\n"
-  "	MUTEXUNLOCK\n"
   "	cai = cai0\n"
   "	B0 =  Bufer0/(1 + (cai*k1bufer/k2bufer))\n"
-  "	FROM i=0 TO N-1 {\n"
-  "		ca = cai\n"
-  "		HPCA = TotalHPCA\n"
-  "		Bufer = B0\n"
-  "		CaBufer = Bufer0 - B0\n"
-  "	}\n"
+  "	ca = cai\n"
+  "	HPCA = TotalHPCA\n"
+  "	Bufer = B0\n"
+  "	CaBufer = Bufer0 - B0\n"
   "	parea = PI*diam\n"
   "	pump = TotalPump/(1 + (cai*k1Pump/k2Pump))\n"
   "	pumpca = TotalPump - pump\n"
@@ -1290,34 +1253,39 @@ static const char* nmodl_file_text =
   "\n"
   "\n"
   "DERIVATIVE states1 {\n"
-  "	cai = ca + cai0/2\n"
+  "	cai = ca  \n"
   "	rates()\n"
   "	n' =  (ninf-n)/ntau\n"
   "}\n"
   "\n"
   "\n"
-  "LOCAL dsq, dsqvol, Vol\n"
+  "LOCAL dsq, dsqvol, r\n"
+  "LOCAL ica_basal \n"
+  "\n"
   "KINETIC scheme1 {\n"
-  "    Vol = diam*diam*(Volume[0] + Volume[1] + Volume[2] + Volume[3])\n"
-  "    : multiplies right hand-sides of diff. equations by the volume\n"
+  "    r = diam/2\n"
+  "    Vol = PI*r*r\n"
+  "    ica_basal = 2*FARADAY*(k3Pump*TotalPump*cai0*(1e5)/(k2Pump/k1Pump))\n"
+  "    k_ins = (1e-3)*(D * 0.1) / ( r^2 )\n"
+  "\n"
+  "    :multiplies right hand-sides of diff. equations by the volume\n"
   "    COMPARTMENT (1e10)*parea {pump pumpca HPCA_m}\n"
   "    COMPARTMENT volo {cao}\n"
   "    COMPARTMENT Vol {ca HPCA CaHPCA Ca2HPCA Bufer CaBufer}\n"
   "    \n"
-  "    : kinetic equations for the Ca2+-ATPase\n"
+  "    :kinetic equations for the Ca2+-ATPase\n"
   "    ~ ca + pump <-> pumpca (k1Pump*parea*(1e10), k2Pump*parea*(1e10))\n"
   "    ~ pumpca <-> pump + cao (k3Pump*parea*(1e10), k4Pump*parea*(1e10))\n"
   "    CONSERVE pump + pumpca = TotalPump * parea * (1e10)\n"
   "    ica_pmp = 2*FARADAY*(f_flux - b_flux)/parea\n"
-  "    : ica_pmp is the \"new\" value, but cashell must be \n"
-  "    : computed using the \"old\" value, i.e. ica_pmp_last\n"
-  "    : all currents except pump\n"
-  "    ~ ca << (-(ica - ica_pmp_last)*PI*diam/(2*FARADAY))\n"
+  "\n"
+  "    :all currents except pump\n"
+  "    ~ ca << (-(ica - ica_basal - ica_pmp_last)*PI*diam/(2*FARADAY))\n"
   "\n"
   "    ~ ca + HPCA <-> CaHPCA (k1HPCA*Vol, k2HPCA*Vol)\n"
   "    ~ ca + CaHPCA <-> Ca2HPCA (k3HPCA*Vol, k4HPCA*Vol)\n"
   "    ~ ca + Bufer <-> CaBufer (k1bufer*Vol, k2bufer*Vol)\n"
-  "    ~ Ca2HPCA <-> HPCA_m (k7HPCA*Vol, k8HPCA*parea*(1e10)) \n"
+  "    ~ Ca2HPCA <-> HPCA_m (k_ins*Vol, k_out*parea*(1e10)) \n"
   "\n"
   "    HPCA_z = HPCA*Vol\n"
   "    CaHPCA_z = CaHPCA*Vol\n"
@@ -1335,18 +1303,7 @@ static const char* nmodl_file_text =
   "	ninf = a/(a+b)\n"
   "}\n"
   "\n"
-  "PROCEDURE factors() {\n"
-  "	LOCAL r, dr2\n"
-  "	r = 1/2\n"
-  "	dr2 = r/(N-1)/2\n"
-  "	Volume[0] = 0 \n"
-  "    FROM i=0 TO N-2 {\n"
-  "		Volume[i] = Volume[i] + PI*(r-dr2/2)*2*dr2\n"
-  "		r = r - dr2\n"
-  "		r = r - dr2\n"
-  "		Volume[i+1] = PI*(r+dr2/2)*2*dr2\n"
-  "	}\n"
-  "}\n"
+  "\n"
   "\n"
   ;
 #endif

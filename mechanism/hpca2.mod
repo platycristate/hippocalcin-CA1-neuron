@@ -2,12 +2,10 @@ NEURON {
 	SUFFIX hpca2
 	USEION ca READ cao, ica, cai  WRITE cai, ica
 	USEION k READ ek WRITE ik
-	RANGE HPCA_m_z, ca, ca1, ca2, ca3, ca_avg, ica_pmp, ica_basal, gbar, ik
-	GLOBAL Volume,Ra, cai0,  Rb, caix,q10, temp, tadj, vmin, vmax
+	RANGE HPCA_m_z, ca, ica_pmp, ica_basal, gbar, ik
+	GLOBAL Ra, cai0,  Rb, caix,q10, temp, tadj, vmin, vmax
 	THREADSAFE
 }
-
-DEFINE N 4 : no. of shells 
 
 UNITS {
 	(molar) = (1/liter)
@@ -21,13 +19,14 @@ UNITS {
 }
 
 PARAMETER {
-	k1HPCA = 11.236 (/mM-ms)
+	k1HPCA = 15 (/mM-ms)
 	k2HPCA = 0.01 (/ms)
-	k3HPCA = 8.51 (/mM-ms)
+	k3HPCA = 16.67 (/mM-ms)
 	k4HPCA = 0.01 (/ms)
-	k7HPCA = 0.01 (/ms) : insertion to the membrane
-	k8HPCA = 0.002 (/ms) : uninsertion from the membrane
+	k_out = 0.002 (/ms) : uninsertion from the membrane
 	TotalHPCA = 0.03821 (mM)
+
+	D = 40 (um2/s)
 	
 	Bufer0 = 0.180 (mM) : initial concentration of the buffer
 	k1bufer = 10 (/mM-ms)
@@ -53,39 +52,41 @@ PARAMETER {
 }
 
 ASSIGNED {
-	diam	(um)
-	ica		(mA/cm2)
-    drive_channels (mM/ms)
-	cai		(mM)
-	Volume[N] (um2)
-	B0      (mM)
-	HP0   (mM)
-	cao (mM)
-	ica_pmp (mA/cm2)
-	ica_basal (mA/cm2)
-    ica_pmp_last (mA/cm2) 
-	parea (um)
-	a		(/ms)
-	b		(/ms)
-	ik 		(mA/cm2)
-	gk		(pS/um2)
-	ek		(mV)
-	ninf
-	ntau 		(ms)	
-	tadj
+    diam	    (um)
+    ica		    (mA/cm2)
+    drive_channels  (mM/ms)
+    cai		    (mM)
+    Vol		    (um2)
+    k_ins           (/ms) : insertion of the HPCA to the membrane
+    ica_balance	    (mA/cm2)
+    B0		    (mM)
+    HP0		    (mM)
+    cao		    (mM)
+    ica_pmp	    (mA/cm2)
+    ica_basal	    (mA/cm2)
+    ica_pmp_last    (mA/cm2) 
+    parea (um)
+    a		    (/ms)
+    b		    (/ms)
+    ik		    (mA/cm2)
+    gk		    (pS/um2)
+    ek		    (mV)
+    ninf
+    ntau 	    (ms)	
+    tadj
 }
 
 CONSTANT { volo = 1e10 (um2) }
 
 STATE {
-	ca 			    (mM)	    <1e-6>
-	HPCA  		    (mM)
-	CaHPCA  		(mM)
-	Ca2HPCA 		(mM)
-	HPCA_m          (mol/cm2)   <1e-16>
+	ca 		(mM)	    <1e-6>
+	HPCA  		(mM)
+	CaHPCA  	(mM)
+	Ca2HPCA 	(mM)
+	HPCA_m		(mol/cm2)   <1e-16>
 	
-	pump            (mol/cm2)   <1e-16>
-	pumpca          (mol/cm2)   <1e-16>
+	pump		(mol/cm2)   <1e-16>
+	pumpca		(mol/cm2)   <1e-16>
 	n
 	
 	HPCA_z          (mM)
@@ -98,22 +99,13 @@ STATE {
 	CaBufer         (mM)
 }
 
-LOCAL factors_done
 INITIAL {
-	MUTEXLOCK
-	if (factors_done == 0) {
-		factors_done = 1
-		factors()
-	}
-	MUTEXUNLOCK
 	cai = cai0
 	B0 =  Bufer0/(1 + (cai*k1bufer/k2bufer))
-	FROM i=0 TO N-1 {
-		ca = cai
-		HPCA = TotalHPCA
-		Bufer = B0
-		CaBufer = Bufer0 - B0
-	}
+	ca = cai
+	HPCA = TotalHPCA
+	Bufer = B0
+	CaBufer = Bufer0 - B0
 	parea = PI*diam
 	pump = TotalPump/(1 + (cai*k1Pump/k2Pump))
 	pumpca = TotalPump - pump
@@ -132,34 +124,39 @@ BREAKPOINT {
 
 
 DERIVATIVE states1 {
-	cai = ca + cai0/2
+	cai = ca  
 	rates()
 	n' =  (ninf-n)/ntau
 }
 
 
-LOCAL dsq, dsqvol, Vol
+LOCAL dsq, dsqvol, r
+LOCAL ica_basal 
+
 KINETIC scheme1 {
-    Vol = diam*diam*(Volume[0] + Volume[1] + Volume[2] + Volume[3])
-    : multiplies right hand-sides of diff. equations by the volume
+    r = diam/2
+    Vol = PI*r*r
+    ica_basal = 2*FARADAY*(k3Pump*TotalPump*cai0*(1e5)/(k2Pump/k1Pump))
+    k_ins = (1e-3)*(D * 0.1) / ( r^2 )
+
+    :multiplies right hand-sides of diff. equations by the volume
     COMPARTMENT (1e10)*parea {pump pumpca HPCA_m}
     COMPARTMENT volo {cao}
     COMPARTMENT Vol {ca HPCA CaHPCA Ca2HPCA Bufer CaBufer}
     
-    : kinetic equations for the Ca2+-ATPase
+    :kinetic equations for the Ca2+-ATPase
     ~ ca + pump <-> pumpca (k1Pump*parea*(1e10), k2Pump*parea*(1e10))
     ~ pumpca <-> pump + cao (k3Pump*parea*(1e10), k4Pump*parea*(1e10))
     CONSERVE pump + pumpca = TotalPump * parea * (1e10)
     ica_pmp = 2*FARADAY*(f_flux - b_flux)/parea
-    : ica_pmp is the "new" value, but cashell must be 
-    : computed using the "old" value, i.e. ica_pmp_last
-    : all currents except pump
-    ~ ca << (-(ica - ica_pmp_last)*PI*diam/(2*FARADAY))
+
+    :all currents except pump
+    ~ ca << (-(ica - ica_basal - ica_pmp_last)*PI*diam/(2*FARADAY))
 
     ~ ca + HPCA <-> CaHPCA (k1HPCA*Vol, k2HPCA*Vol)
     ~ ca + CaHPCA <-> Ca2HPCA (k3HPCA*Vol, k4HPCA*Vol)
     ~ ca + Bufer <-> CaBufer (k1bufer*Vol, k2bufer*Vol)
-    ~ Ca2HPCA <-> HPCA_m (k7HPCA*Vol, k8HPCA*parea*(1e10)) 
+    ~ Ca2HPCA <-> HPCA_m (k_ins*Vol, k_out*parea*(1e10)) 
 
     HPCA_z = HPCA*Vol
     CaHPCA_z = CaHPCA*Vol
@@ -177,16 +174,5 @@ PROCEDURE rates() {
 	ninf = a/(a+b)
 }
 
-PROCEDURE factors() {
-	LOCAL r, dr2
-	r = 1/2
-	dr2 = r/(N-1)/2
-	Volume[0] = 0 
-    FROM i=0 TO N-2 {
-		Volume[i] = Volume[i] + PI*(r-dr2/2)*2*dr2
-		r = r - dr2
-		r = r - dr2
-		Volume[i+1] = PI*(r+dr2/2)*2*dr2
-	}
-}
+
 

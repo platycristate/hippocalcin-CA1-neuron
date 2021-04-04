@@ -28,7 +28,7 @@ for seg in ad:
     seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
 
 h.TotalHPCA_hpca2 = params['HPCA']['HPCA0'].value
-h.k7HPCA_hpca2 = params['HPCA']['k7HPCA'].value
+h.k_out_hpca2 = params['HPCA']['k_out'].value
 h.TotalPump_hpca2 = params['HPCA']['Pump0'].value
 h.Bufer0_hpca2 = params['HPCA']['Buffer0'].value
 h.k1bufer_hpca2 = params['HPCA']['k1B'].value
@@ -38,14 +38,13 @@ h.k2Pump_hpca2 = params['HPCA']['k2P'].value
 h.k3Pump_hpca2 = params['HPCA']['k3P'].value
 h.k4Pump_hpca2 = params['HPCA']['k4P'].value
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
-h.tau_d_hpca2 = params['HPCA']['tau_d'].value 
 ad.diam = params['Neuron']['diam'].value
 ad.L = params['Neuron']['length'].value
 
 print(ad.psection()['density_mechs'].keys())
 sc = seclamp_stim( eval(params['Simulation']['dep_loc'].value) )
 sc.dur1 = 1000
-sc.dur2 = 4000
+sc.dur2 = 2000
 
 
 t = h.Vector().record(h._ref_t)
@@ -58,23 +57,25 @@ tot_hpca = h.Vector().record(ad(.5)._ref_HPCA_tot_z_hpca2)
 ica_basal = h.Vector().record(ad(.5)._ref_ica_basal_hpca2)
 clamp_v = h.Vector().record(sc._ref_vc)
 
-print(ad.nseg)
-run(dur=10000)
 
-print(cai[1]*10**6, 'nM')
-print(hpca[-1], 'mol/cm2')
+run(dur=12000)
+
+print(cai[-1]*10**6, 'nM')
 diameter = str(ad.diam)
-#plt.plot(t/1000, ica*1000, color='black')
-#plt.ylabel('pA/pF')
-#plt.show()
-print(ica_basal[3], 'mA/cm2')
+ik_sahp = np.array(ik_sahp)
+actual_sahp =  ik_sahp[np.where( np.array(t) > 5100 )[0][0]:] 
+half_decay =  np.array(t)[np.array(t) > 5100][ np.where( actual_sahp < actual_sahp[0]/np.e )[0][0] ]
+
+tau_sahp = (half_decay - 5100)/1000
+print('tau_sAHPk = ',round(tau_sahp, 1), ' s')
+
 fig, axs = hpca_plot(t,
         #(clamp_v, 'Voltage clamp, mV'),
         #(ica*1000, 'ICa (pA/pF)'),
         (cai*10**6, 'Ca (nM)'),
         (hpca/tot_hpca, 'hpca/tot_hpca'),
-        (ik_sahp*10*ad(.5).area(), 'I_sAHP (pA)'),
-#        (ica_basal, 'Ica_basal (mA/cm2)'),
+        (ik_sahp*10*ad(.5).area(), 'I_sAHP (pA), $\\tau_s$ = 3 s'),
+#       (ica_basal, 'Ica_basal (mA/cm2)'),
         title="diameter=%s um" % diameter
                     )
 #fig.savefig(work_dir + params['filename'])

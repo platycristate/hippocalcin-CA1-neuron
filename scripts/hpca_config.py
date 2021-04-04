@@ -11,9 +11,7 @@ import numpy as np
 
 from NeuroTools.parameters import Parameter
 
-params = {
-        'working_dir': 'reproducing-experiments/24Mar2021/',
-        'filename': 'ipulses100_diam_dependence.pdf',
+params = { 'working_dir': 'reproducing-experiments/24Mar2021/', 'filename': 'ipulses100_diam_dependence.pdf',
         'Simulation':
         {
             'duration': Parameter(8000, "ms"),
@@ -38,10 +36,10 @@ params = {
 
              # HPCA 
              'HPCA0': Parameter(0.04, "mM"),
-             'k7HPCA': Parameter(0.002, "/ms"),
+             'k_out': Parameter(0.002, "/ms"),
 
              # initial Ca2+
-             'Ca_i': Parameter(100*10**(-6), "mM"),
+             'Ca_i': Parameter(3000*10**(-6), "mM"),
 
              # parameters for simple decay
              'tau_d': Parameter(100000000, "ms"),
@@ -51,7 +49,7 @@ params = {
          },
         'CaL':
         {
-            'gcalbar_dendrite': Parameter(0.0015*1.3/10, 'S/cm2') # 0.0015
+            'gcalbar_dendrite': Parameter(0.0015*1.2/10, 'S/cm2') # 0.0015
         },
         'CaT':
         {
@@ -59,7 +57,7 @@ params = {
         },
         'Neuron':
         {
-            'diam': Parameter(2, 'um'),
+            'diam': Parameter(2.5, 'um'),
             'length': Parameter(30, 'um')
         }
     }
