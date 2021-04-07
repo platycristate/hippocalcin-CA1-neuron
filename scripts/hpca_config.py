@@ -15,20 +15,20 @@ params = { 'working_dir': 'reproducing-experiments/24Mar2021/', 'filename': 'ipu
         'Simulation':
         {
             'duration': Parameter(8000, "ms"),
-            'dep_loc': Parameter('h.apical_dendrite[0](.5)'),
+            'dep_loc': Parameter('h.apical_dendrite[7](.5)'),
             'dep_dur': Parameter(2000, "ms"),
             '#spikes': Parameter(100), 'dt': Parameter(0.1, 'ms'),
-            'section':Parameter('h.apical_dendrite[0]')
+            'section':Parameter('h.apical_dendrite[7]')
         },
         'HPCA':
         {
             # Cytosol buffer
             'Buffer0': Parameter(0.180, "mM"),
-            'k1B': Parameter(142, "/mM*ms"),
+            'k1B': Parameter(142, "/mM*ms"), #142 # Kd = 0.5 uM
             'k2B': Parameter(0.1, "/ms"),
 
              # Ca2+ATPase
-             'Pump0': Parameter(5e-12, "mol/cm2"),
+             'Pump0': Parameter(5e-12 * 1.5 , "mol/cm2"),
              'k1P': Parameter(1, "/mM*ms"),
              'k2P': Parameter(0.0003, "/ms"),
              'k3P': Parameter(1, "/ms"),
@@ -49,7 +49,7 @@ params = { 'working_dir': 'reproducing-experiments/24Mar2021/', 'filename': 'ipu
          },
         'CaL':
         {
-            'gcalbar_dendrite': Parameter(0.0015*1.2/10, 'S/cm2') # 0.0015
+            'gcalbar_dendrite': Parameter(0.0015 / 10 , 'S/cm2') # 0.0015
         },
         'CaT':
         {
@@ -57,7 +57,7 @@ params = { 'working_dir': 'reproducing-experiments/24Mar2021/', 'filename': 'ipu
         },
         'Neuron':
         {
-            'diam': Parameter(2.5, 'um'),
-            'length': Parameter(30, 'um')
+            'diam': Parameter(1.5, 'um'),
+            'length': Parameter(20, 'um')
         }
     }

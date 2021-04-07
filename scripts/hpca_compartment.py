@@ -22,10 +22,11 @@ ad.uninsert('cad')
 ad.insert('hpca2')
 ad.uninsert('calH')
 ad.insert('cal')
+ad.uninsert('car')
 
 for seg in ad:
     seg.cal.gcalbar = params['CaL']['gcalbar_dendrite'].value
-    seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
+    #seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
 
 h.TotalHPCA_hpca2 = params['HPCA']['HPCA0'].value
 h.k_out_hpca2 = params['HPCA']['k_out'].value
@@ -44,11 +45,13 @@ ad.L = params['Neuron']['length'].value
 print(ad.psection()['density_mechs'].keys())
 sc = seclamp_stim( eval(params['Simulation']['dep_loc'].value) )
 sc.dur1 = 1000
-sc.dur2 = 2000
+sc.dur2 = 4000
 
 
 t = h.Vector().record(h._ref_t)
-ica = h.Vector().record(ad(.5)._ref_ica)
+#ica_t = h.Vector().record(ad(.5)._ref_iCa_cat)
+ica_l = h.Vector().record(ad(.5)._ref_ica_cal)
+CaB = h.Vector().record(ad(.5)._ref_CaBufer_hpca2)
 ica_pmp = h.Vector().record(ad(0.5)._ref_ica_pmp_hpca2)
 ik_sahp = h.Vector().record(ad(0.5)._ref_ik_hpca2)
 cai = h.Vector().record(ad(0.5)._ref_cai)
@@ -63,10 +66,10 @@ run(dur=12000)
 print(cai[-1]*10**6, 'nM')
 diameter = str(ad.diam)
 ik_sahp = np.array(ik_sahp)
-actual_sahp =  ik_sahp[np.where( np.array(t) > 5100 )[0][0]:] 
-half_decay =  np.array(t)[np.array(t) > 5100][ np.where( actual_sahp < actual_sahp[0]/np.e )[0][0] ]
+actual_sahp =  ik_sahp[np.where( np.array(t) > sc.dur2 )[0][0]:] 
+half_decay =  np.array(t)[np.array(t) > sc.dur2][ np.where( actual_sahp < actual_sahp[0]/np.e )[0][0] ]
 
-tau_sahp = (half_decay - 5100)/1000
+tau_sahp = (half_decay - sc.dur2)/1000
 print('tau_sAHPk = ',round(tau_sahp, 1), ' s')
 
 fig, axs = hpca_plot(t,
@@ -74,7 +77,10 @@ fig, axs = hpca_plot(t,
         #(ica*1000, 'ICa (pA/pF)'),
         (cai*10**6, 'Ca (nM)'),
         (hpca/tot_hpca, 'hpca/tot_hpca'),
-        (ik_sahp*10*ad(.5).area(), 'I_sAHP (pA), $\\tau_s$ = 3 s'),
+        #(ica_t*10*ad(.5).area(), 'T, pA'),
+        #(ica_l, 'L, mA/cm2'),
+        (ik_sahp*10*ad(.5).area(), 'ik (sahp) pA'),
+        #(CaB*10**3, 'CaB (uM)'),
 #       (ica_basal, 'Ica_basal (mA/cm2)'),
         title="diameter=%s um" % diameter
                     )

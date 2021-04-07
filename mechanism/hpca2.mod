@@ -167,7 +167,7 @@ KINETIC scheme1 {
 
 
 PROCEDURE rates() {  
-	a = Ra * HPCA_m * parea*(1e11)
+	a = Ra * HPCA_m * parea*(1e12)
 	b = Rb
 	tadj = q10^((celsius - temp)/10)
 	ntau = 1/tadj/(a+b)

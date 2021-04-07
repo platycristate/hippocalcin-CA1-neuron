@@ -25,7 +25,7 @@ ad.insert('cal')
 
 for seg in ad:
     seg.cal.gcalbar = params['CaL']['gcalbar_dendrite'].value
-    #seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
+    seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
 
 h.TotalHPCA_hpca2 = params['HPCA']['HPCA0'].value
 h.k_out_hpca2 = params['HPCA']['k_out'].value
@@ -37,13 +37,13 @@ h.k1Pump_hpca2 = params['HPCA']['k1P'].value
 h.k2Pump_hpca2 = params['HPCA']['k2P'].value
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
 h.tau_d_hpca2 = params['HPCA']['tau_d'].value
-#ad.diam = params['Neuron']['diam'].value
-#ad.L = params['Neuron']['length'].value
+ad.diam = params['Neuron']['diam'].value
+ad.L = params['Neuron']['length'].value
 
 #____________________________________________________________________________________________
 #Synapse.spike_times = list(range(950, 2000, 100))
 
-synapses = Synapse.create_synapses(seed_value=444, num_rand_locs=20)
+synapses = Synapse.create_synapses(seed_value=667, num_rand_locs=20)
 Synapse.play_stimulation()
 print(Synapse.gmax_AMPA)
 
@@ -61,8 +61,8 @@ tot_hpca = h.Vector().record(ad(.5)._ref_HPCA_tot_z_hpca2)
 ik_sahp = h.Vector().record(ad(.5)._ref_ik_hpca2)
 v = h.Vector().record(ad(.5)._ref_v)
 #del synapses
-h.TotalHPCA_hpca2 = 0.00
-run(dur=8000)
+h.TotalHPCA_hpca2 = 0.03
+run(dur=4000)
 
 n_spikes = str(params['Simulation']['#spikes'].value)
 diameter = str(params['Neuron']['diam'].value)

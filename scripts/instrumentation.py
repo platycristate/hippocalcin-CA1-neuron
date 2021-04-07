@@ -73,7 +73,7 @@ def trains_stim( loc, n=params['Simulation']['#spikes'].value,
     return ic
 
 def seclamp_stim(loc, dur1=1000, dur2=params['Simulation']['dep_dur'].value,
-        dur3=20000, v0=-70, v1=0):
+        dur3=20000, v0=-70, v1=10):
     sc = h.SEClamp( loc )
     sc.dur1 = dur1
     sc.dur2 = dur2

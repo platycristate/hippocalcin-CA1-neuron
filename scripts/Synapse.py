@@ -14,7 +14,7 @@ class Synapse:
     gmax_NMDA = 0.7 * 0.001 * 100
 
     stimulator = h.VecStim()
-    spike_times = list(range(950, 3000, 200))
+    spike_times = list(range(950, 12000, 200))
     spikes_vector = h.Vector(spike_times)
 
 

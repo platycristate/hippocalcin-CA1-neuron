@@ -648,7 +648,7 @@ _MATELM2(8, 8) *= ( ( 1e10 ) * parea);  }
  }
  
 static int  rates ( _threadargsproto_ ) {
-   a = Ra * HPCA_m * parea * ( 1e11 ) ;
+   a = Ra * HPCA_m * parea * ( 1e12 ) ;
    b = Rb ;
    tadj = pow( q10 , ( ( celsius - temp ) / 10.0 ) ) ;
    ntau = 1.0 / tadj / ( a + b ) ;
@@ -1296,7 +1296,7 @@ static const char* nmodl_file_text =
   "\n"
   "\n"
   "PROCEDURE rates() {  \n"
-  "	a = Ra * HPCA_m * parea*(1e11)\n"
+  "	a = Ra * HPCA_m * parea*(1e12)\n"
   "	b = Rb\n"
   "	tadj = q10^((celsius - temp)/10)\n"
   "	ntau = 1/tadj/(a+b)\n"
