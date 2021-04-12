@@ -2,27 +2,27 @@ from random import randint, uniform, seed
 from neuron import h, gui
 from neuron.units import ms, mV
 import matplotlib.pyplot as plt
+from matplotlib import cm
 from matplotlib import style
 from matplotlib import style, rc
 import numpy as np
 import pickle
+
+# 666
 
 class Synapse:
 
     num_synapses = 0
     gmax_AMPA = 0.001 * 100
     gmax_NMDA = 0.7 * 0.001 * 100
+    synapses_instances = []
 
     stimulator = h.VecStim()
-    spike_times = list(range(950, 12000, 200))
-    spikes_vector = h.Vector(spike_times)
-
 
     def __init__(self, loc):
         '''Create AMPA/NMDA synapse at given location ('loc' argument)
         '''
         self.loc = loc # location of the synapse
-        #self.spike_times = list(range(500, 1000, 20)) + list(range(4000, 8000, 60))
         self.GluSyn = h.SimpleAMPA_NMDA(self.loc)
         self.GluSyn.gmax_AMPA = Synapse.gmax_AMPA
         self.GluSyn.gmax_NMDA = Synapse.gmax_NMDA
@@ -30,6 +30,9 @@ class Synapse:
 
         self.connection = h.NetCon(Synapse.stimulator, self.GluSyn)
         self.connection.weight[0] = 1
+        
+        # add new instance of the synapse to the list of synapses
+        Synapse.synapses_instances.append(self)
 
     def __repr__(self):
         return 'Synapse[{}]'.format(self.loc)
@@ -44,10 +47,11 @@ class Synapse:
 
 
     @classmethod
-    def play_stimulation(cls):
+    def play_stimulation(cls, spike_times):
         '''Presynaptic stimulation of all Synapse instances
         '''
-        cls.stimulator.play(cls.spikes_vector)
+        spikes_vector = h.Vector(spike_times)
+        cls.stimulator.play(spikes_vector)
 
 
     @classmethod
@@ -79,3 +83,18 @@ class Synapse:
             syns = [cls(h.apical_dendrite[randint(0, 118)](uniform(0, 1))) for i in range(num_rand_locs)]
             return syns
 
+    @classmethod
+    def plot_synapses_locs(cls, colormap='plasma'):
+        '''Plot location of the synapses in the dendritics tree
+        '''
+
+        plot_stmnt = 'ps.plot(plt, cmap=cm.' + colormap + ').'
+        for synapse in cls.synapses_instances:
+            ps = h.PlotShape()
+            plot_stmnt += 'mark(h.' + str(synapse.loc) + ').'
+        plot_stmnt = plot_stmnt[:-1]
+        eval(plot_stmnt)
+        plt.xlabel('$\mu M$', fontsize=16)
+        plt.ylabel('$\mu M$', fontsize=16)
+        print('Plotting locations of the synapses in the dendritic tree!')
+        plt.show()

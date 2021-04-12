@@ -11,7 +11,8 @@ import numpy as np
 
 from NeuroTools.parameters import Parameter
 
-params = { 'working_dir': 'reproducing-experiments/24Mar2021/', 'filename': 'ipulses100_diam_dependence.pdf',
+params = { 'working_dir': 'reproducing-experiments/12Apr2021/', 
+           'filename': 'ipulses100_diam_dependence.pdf',
         'Simulation':
         {
             'duration': Parameter(8000, "ms"),

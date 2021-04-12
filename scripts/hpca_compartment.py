@@ -84,4 +84,4 @@ fig, axs = hpca_plot(t,
 #       (ica_basal, 'Ica_basal (mA/cm2)'),
         title="diameter=%s um" % diameter
                     )
-#fig.savefig(work_dir + params['filename'])
+fig.savefig(work_dir + 'test.pdf')
