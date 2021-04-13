@@ -90,11 +90,11 @@ class Synapse:
 
         plot_stmnt = 'ps.plot(plt, cmap=cm.' + colormap + ').'
         for synapse in cls.synapses_instances:
-            ps = h.PlotShape()
+            ps = h.PlotShape(False)
             plot_stmnt += 'mark(h.' + str(synapse.loc) + ').'
-        plot_stmnt = plot_stmnt[:-1]
+        plot_stmnt += 'mark(h.soma[0](.5), "s")'
         eval(plot_stmnt)
-        plt.xlabel('$\mu M$', fontsize=16)
-        plt.ylabel('$\mu M$', fontsize=16)
+        plt.xlabel('$\mu m$', fontsize=16)
+        plt.ylabel('$\mu m$', fontsize=16)
         print('Plotting locations of the synapses in the dendritic tree!')
         plt.show()

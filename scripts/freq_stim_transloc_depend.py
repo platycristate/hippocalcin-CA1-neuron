@@ -30,7 +30,6 @@ for seg in ad:
     #seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
 
 h.TotalHPCA_hpca2 = params['HPCA']['HPCA0'].value
-h.k_out_hpca2 = params['HPCA']['k_out'].value
 h.TotalPump_hpca2 = params['HPCA']['Pump0'].value
 h.Bufer0_hpca2 = params['HPCA']['Buffer0'].value
 h.k1bufer_hpca2 = params['HPCA']['k1B'].value
@@ -38,28 +37,10 @@ h.k2bufer_hpca2 = params['HPCA']['k2B'].value
 h.k1Pump_hpca2 = params['HPCA']['k1P'].value
 h.k2Pump_hpca2 = params['HPCA']['k2P'].value
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
-h.tau_d_hpca2 = params['HPCA']['tau_d'].value
 
+#_____________________________________________________________________________
+h.k_out_hpca2 = params['NCALD']['k_out'].value
 #____________________________________________________________________________________________
-spike_times = list(range(950, 3000, 100))
-synapses = Synapse.create_synapses(seed_value=12227, num_rand_locs=20)
-Synapse.play_stimulation(spike_times)
-
-#ps = h.PlotShape()
-#a = 'ps.plot(plt, cmap=cm.plasma).'
-#for i in synapses:
-#    a += 'mark(h.' + str(i.loc) + ').'
-#a = a[:-1]
-#print(a)
-#eval(a)
-
-Synapse.plot_synapses_locs()
-
-'''
-train_stim = trains_stim( h.soma[0](.5), per=20, delay=200,  n=params['Simulation']['#spikes'].value,
-        amp=1.2, dur=10)
-train_stim.num = 25
-ipulses = h.Vector().record(train_stim._ref_i)
 
 t = h.Vector().record(h._ref_t)
 ica = h.Vector().record(ad(.5)._ref_ica)
@@ -69,19 +50,7 @@ hpca = h.Vector().record(ad(0.5)._ref_HPCA_m_z_hpca2)
 tot_hpca = h.Vector().record(ad(.5)._ref_HPCA_tot_z_hpca2)
 ik_sahp = h.Vector().record(ad(.5)._ref_ik_hpca2)
 v = h.Vector().record(ad(.5)._ref_v)
-h.TotalHPCA_hpca2 = 0.00
+h.TotalHPCA_hpca2 = 0.03
 
-run(dur=3000)
-
-n_spikes = str(params['Simulation']['#spikes'].value)
-diameter = str(params['Neuron']['diam'].value)
-fig, axs = hpca_plot(t,
-        (v, 'mV'),
-        #(cai*10**6, 'Cai (nM)'),
-        (hpca/tot_hpca, 'HPCAm/HPCAtot')
-        #(ik_sahp*10*ad(.5).area(), 'pA'),
-        #title= '%s current pulses, f = 25 Hz, amp=10 nA, dur=15 ms, diam = %s um' % (n_spikes, diameter),
-                    )
-
-fig.savefig(work_dir + '444seed_stim_freq10Hz_50Hz_0uM.pdf')
-'''
+APs = [i for i in range(1, 160, 10)]
+APs_ipulses_translocation(APs, hpca, tot_hpca, 'ncald_ipulses_soma')

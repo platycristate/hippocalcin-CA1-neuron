@@ -18,7 +18,8 @@ params = { 'working_dir': 'reproducing-experiments/12Apr2021/',
             'duration': Parameter(8000, "ms"),
             'dep_loc': Parameter('h.apical_dendrite[7](.5)'),
             'dep_dur': Parameter(2000, "ms"),
-            '#spikes': Parameter(100), 'dt': Parameter(0.1, 'ms'),
+            '#spikes': Parameter(100), 
+            'dt': Parameter(0.1, 'ms'),
             'section':Parameter('h.apical_dendrite[7]')
         },
         'HPCA':
@@ -36,18 +37,20 @@ params = { 'working_dir': 'reproducing-experiments/12Apr2021/',
              'k4P': Parameter(0.0003, "/mM*ms"),
 
              # HPCA 
-             'HPCA0': Parameter(0.04, "mM"),
+             'HPCA0': Parameter(0.03, "mM"),
              'k_out': Parameter(0.002, "/ms"),
 
              # initial Ca2+
              'Ca_i': Parameter(3000*10**(-6), "mM"),
 
-             # parameters for simple decay
-             'tau_d': Parameter(100000000, "ms"),
-
              # calcium diffusion coefficient
              'DCa': Parameter(0.22, "um2/ms")
          },
+        'NCALD':
+        {
+            # 12 s tau_out for neurocalcin
+            'k_out': Parameter(1/12000, "/ms")
+        },
         'CaL':
         {
             'gcalbar_dendrite': Parameter(0.0015 / 10 , 'S/cm2') # 0.0015

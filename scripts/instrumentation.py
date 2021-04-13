@@ -5,6 +5,8 @@ import numpy as np
 import os
 import pickle
 from hpca_config import params
+from hpca_config import *
+import pandas as pd
 
 colors = plt.rcParams["axes.prop_cycle"]()
 
@@ -27,6 +29,34 @@ def initialize():
     print('Opened. Setting up the cell \n');
     h.cell_setup(econ);
     return econ
+
+def APs_ipulses_translocation(APs, hpca, tot_hpca, filename):
+    '''Generates IPulses in the soma that induce 
+    APs in the apical dendrite; plots the dependence
+    of the max HPCA_m concentration on # of induced APs
+    '''
+    train_stim = trains_stim( h.soma[0](.5), per=20, delay=200,  
+                n=params['Simulation']['#spikes'].value,
+                        amp=12, dur=1)
+    max_translocations = []
+    for f in APs:
+        train_stim.num = f
+        run(dur=3000)
+        print(np.max(np.array(hpca/tot_hpca)))
+        max_translocations.append(np.max(np.array(hpca/tot_hpca)))
+    df = pd.DataFrame()
+    df['#APs'] = APs
+    df['Translocation'] = max_translocations
+
+    plt.plot(APs, max_translocations)
+    plt.xlabel('# APs')
+    plt.ylabel('Translocation')
+    plt.title('Induced by IPulses at soma')
+    plt.show()
+
+    plt.savefig(params['working_dir'] + filename + '.pdf')
+    df.to_csv(params['working_dir'] + filename + '.csv')
+
 
 def run(dur=None):
     # Set simulation parameters for the experiment
