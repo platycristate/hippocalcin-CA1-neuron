@@ -30,7 +30,7 @@ params = { 'working_dir': 'reproducing-experiments/12Apr2021/',
             'k2B': Parameter(0.1, "/ms"),
 
              # Ca2+ATPase
-             'Pump0': Parameter(5e-12 * 1.5 , "mol/cm2"),
+             'Pump0': Parameter(5e-12 / 1.5 , "mol/cm2"),
              'k1P': Parameter(1, "/mM*ms"),
              'k2P': Parameter(0.0003, "/ms"),
              'k3P': Parameter(1, "/ms"),
@@ -41,7 +41,7 @@ params = { 'working_dir': 'reproducing-experiments/12Apr2021/',
              'k_out': Parameter(0.002, "/ms"),
 
              # initial Ca2+
-             'Ca_i': Parameter(1500*10**(-6), "mM"),
+             'Ca_i': Parameter(3000*10**(-6), "mM"),
 
              # calcium diffusion coefficient
              'DCa': Parameter(0.22, "um2/ms")
@@ -53,7 +53,7 @@ params = { 'working_dir': 'reproducing-experiments/12Apr2021/',
         },
         'CaL':
         {
-            'gcalbar_dendrite': Parameter(0.0015 / 10 / 1.5 , 'S/cm2') # 0.0015
+            'gcalbar_dendrite': Parameter(0.0015 / 10 / 1.5 / 1.5/ 1.3  , 'S/cm2') # 0.0015
         },
         'CaT':
         {

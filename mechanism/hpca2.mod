@@ -20,9 +20,9 @@ UNITS {
 
 PARAMETER {
 	k1HPCA = 15 (/mM-ms)
-	k2HPCA = 0.01 (/ms)
+	k2HPCA = 0.01 (/ms) : 0.01
 	k3HPCA = 16.67 (/mM-ms)
-	k4HPCA = 0.01 (/ms)
+	k4HPCA = 0.01 (/ms) : 0.01
 	k_out = 0.002 (/ms) : uninsertion from the membrane
 	TotalHPCA = 0.03821 (mM)
 
@@ -137,7 +137,7 @@ KINETIC scheme1 {
     r = diam/2
     Vol = PI*r*r
     ica_basal = 2*FARADAY*(k3Pump*TotalPump*cai0*(1e5)/(k2Pump/k1Pump))
-    k_ins = (1e-3)*(D * 0.1) / ( r^2 )
+    k_ins = (1e-3)*(D * 0.07) / ( r^2 )
 
     :multiplies right hand-sides of diff. equations by the volume
     COMPARTMENT (1e10)*parea {pump pumpca HPCA_m}
