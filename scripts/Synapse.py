@@ -84,17 +84,19 @@ class Synapse:
             return syns
 
     @classmethod
-    def plot_synapses_locs(cls, colormap='plasma'):
+    def plot_synapses_locs(cls, colormap='jet', var='v'):
         '''Plot location of the synapses in the dendritics tree
         '''
-
         plot_stmnt = 'ps.plot(plt, cmap=cm.' + colormap + ').'
+        ps = h.PlotShape()
+        ps.variable(var)
+        ps.scale(-70, 10)
         for synapse in cls.synapses_instances:
-            ps = h.PlotShape(False)
             plot_stmnt += 'mark(h.' + str(synapse.loc) + ').'
         plot_stmnt += 'mark(h.soma[0](.5), "s")'
         eval(plot_stmnt)
         plt.xlabel('$\mu m$', fontsize=16)
         plt.ylabel('$\mu m$', fontsize=16)
+        ps.show(0) # enable displaying of diameters ps.variable('v')
         print('Plotting locations of the synapses in the dendritic tree!')
         plt.show()

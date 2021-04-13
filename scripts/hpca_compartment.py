@@ -26,7 +26,7 @@ ad.uninsert('car')
 
 for seg in ad:
     seg.cal.gcalbar = params['CaL']['gcalbar_dendrite'].value
-    #seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
+    seg.cat.gcatbar = params['CaT']['gcatbar_dendrite'].value
 
 h.TotalHPCA_hpca2 = params['HPCA']['HPCA0'].value
 h.k_out_hpca2 = params['HPCA']['k_out'].value

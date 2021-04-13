@@ -39,7 +39,7 @@ h.k2Pump_hpca2 = params['HPCA']['k2P'].value
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
 
 #_____________________________________________________________________________
-h.k_out_hpca2 = params['NCALD']['k_out'].value
+h.k_out_hpca2 = params['HPCA']['k_out'].value
 #____________________________________________________________________________________________
 
 t = h.Vector().record(h._ref_t)
@@ -53,4 +53,4 @@ v = h.Vector().record(ad(.5)._ref_v)
 h.TotalHPCA_hpca2 = 0.03
 
 APs = [i for i in range(1, 160, 10)]
-APs_ipulses_translocation(APs, hpca, tot_hpca, 'ncald_ipulses_soma')
+APs_ipulses_translocation(APs, hpca, tot_hpca, 'hpca_ipulses_soma')

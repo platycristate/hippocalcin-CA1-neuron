@@ -37,7 +37,7 @@ PARAMETER {
 	k3Pump = 1 (/ms)
 	k4Pump = 0.0003 (/mM-ms)
 	TotalPump = 1e-11 (mol/cm2)
-	cai0 = 100e-6 (mM) : initial [Ca2+]_i, 110 * 10^(-6) mM = 110 nM.
+	cai0 = 50e-6 (mM) : initial [Ca2+]_i, 110 * 10^(-6) mM = 110 nM.
 	tau_d = 200 (ms)
 	delta = 0.1 (um)
 	

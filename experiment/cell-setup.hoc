@@ -494,7 +494,8 @@ proc cell_setup() {
     soma_caL = 0.014     
     soma_car = 0.0003
     gsomacar = 0.003 
-    soma_caLH =0.95*0.000333
+    soma_caLH = 0.95*0.000333
+    dend_cal = 0.000015
     soma_caT = 0.0001
     soma_kca = 0.0001
     soma_km = 0.06

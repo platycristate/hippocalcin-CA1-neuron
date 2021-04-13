@@ -38,13 +38,12 @@ h.k2bufer_hpca2 = params['HPCA']['k2B'].value
 h.k1Pump_hpca2 = params['HPCA']['k1P'].value
 h.k2Pump_hpca2 = params['HPCA']['k2P'].value
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
-h.tau_d_hpca2 = params['HPCA']['tau_d'].value
 
 #____________________________________________________________________________________________
 spike_times = list(range(950, 3000, 100))
-synapses = Synapse.create_synapses(seed_value=12227, num_rand_locs=20)
+synapses = Synapse.create_synapses(seed_value=444, num_rand_locs=20)
 Synapse.play_stimulation(spike_times)
-Synapse.plot_synapses_locs()
+Synapse.plot_synapses_locs(var='gcalbar_cal')
 
 
 train_stim = trains_stim( h.soma[0](.5), per=20, delay=200,  n=params['Simulation']['#spikes'].value,
@@ -60,9 +59,9 @@ hpca = h.Vector().record(ad(0.5)._ref_HPCA_m_z_hpca2)
 tot_hpca = h.Vector().record(ad(.5)._ref_HPCA_tot_z_hpca2)
 ik_sahp = h.Vector().record(ad(.5)._ref_ik_hpca2)
 v = h.Vector().record(ad(.5)._ref_v)
-h.TotalHPCA_hpca2 = 0.00
+h.TotalHPCA_hpca2 = 0.03
 
-run(dur=3000)
+run(dur=300)
 
 n_spikes = str(params['Simulation']['#spikes'].value)
 diameter = str(params['Neuron']['diam'].value)
@@ -74,5 +73,7 @@ fig, axs = hpca_plot(t,
         #title= '%s current pulses, f = 25 Hz, amp=10 nA, dur=15 ms, diam = %s um' % (n_spikes, diameter),
                     )
 
-fig.savefig(work_dir + '444seed_stim_freq10Hz_50Hz_0uM.pdf')
+
+Synapse.plot_synapses_locs()
+#fig.savefig(work_dir + '444seed_stim_freq10Hz_50Hz_0uM.pdf')
 

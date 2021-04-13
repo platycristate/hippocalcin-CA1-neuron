@@ -1,4 +1,4 @@
-rand_seed = 888
+rand_seed = 444
 
 #______________________________________________________________
 from random import randint, uniform, seed
@@ -15,10 +15,10 @@ from Synapse import Synapse
 plt.style.use('seaborn-whitegrid')
 
 work_dir = params['working_dir']
-d = 'firing_patterns %s/' % rand_seed
-if not os.path.exists(work_dir):
-    os.makedirs(work_dir)
-    os.makedirs(d)
+d = 'firing_patterns_%s/' % rand_seed
+if not os.path.exists(work_dir + d):
+    print(work_dir + d)
+    os.makedirs(work_dir + d)
 #_________________________________INITIALIZATION___________________________________________
 
 econ = initialize() # initialize pyramidal CA1 neuron from Poirazi 2003
@@ -55,6 +55,8 @@ train_stim = trains_stim( h.soma[0](.5), per=20, delay=200,  n=params['Simulatio
 train_stim.num = 25
 ipulses = h.Vector().record(train_stim._ref_i)
 
+print(ad.diam)
+
 t = h.Vector().record(h._ref_t)
 ica = h.Vector().record(ad(.5)._ref_ica)
 ica_pmp = h.Vector().record(ad(0.5)._ref_ica_pmp_hpca2)
@@ -74,7 +76,7 @@ for idx, conc in enumerate([0, 0.01, 0.03]):
 
 fig.tight_layout()
 plt.show()
-fig.savefig(work_dir + d + 'firing_patterns_%s_seed_conc.pdf' % rand_seed)
+#fig.savefig(work_dir + d + 'firing_patterns_%s_seed_conc.pdf' % rand_seed)
 
 fig, ax = plt.subplots(3, 1, dpi=150)
 for idx, per in enumerate([100, 200, 300]):
@@ -86,4 +88,4 @@ for idx, per in enumerate([100, 200, 300]):
 
 fig.tight_layout()
 plt.show()
-fig.savefig(work_dir + d + 'firing_patterns_%s_seed_period.pdf' % rand_seed)
+#fig.savefig(work_dir + d + 'firing_patterns_%s_seed_period.pdf' % rand_seed)
