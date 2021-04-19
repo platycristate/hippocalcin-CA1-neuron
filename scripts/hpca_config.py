@@ -11,7 +11,7 @@ import numpy as np
 
 from NeuroTools.parameters import Parameter
 
-params = { 'working_dir': 'reproducing-experiments/12Apr2021/', 
+params = { 'working_dir': 'reproducing-experiments/17Apr2021/', 
            'filename': 'ipulses100_diam_dependence.pdf',
         'Simulation':
         {
@@ -39,12 +39,11 @@ params = { 'working_dir': 'reproducing-experiments/12Apr2021/',
              # HPCA 
              'HPCA0': Parameter(0.03, "mM"),
              'k_out': Parameter(0.002, "/ms"),
+             'C': Parameter(1, "none"),
 
              # initial Ca2+
-             'Ca_i': Parameter(3000*10**(-6), "mM"),
+             'Ca_i': Parameter(1500*10**(-6), "mM")
 
-             # calcium diffusion coefficient
-             'DCa': Parameter(0.22, "um2/ms")
          },
         'NCALD':
         {
@@ -53,7 +52,7 @@ params = { 'working_dir': 'reproducing-experiments/12Apr2021/',
         },
         'CaL':
         {
-            'gcalbar_dendrite': Parameter(0.0015 / 10 / 1.5 / 1.5/ 1.3  , 'S/cm2') # 0.0015
+            'gcalbar_dendrite': Parameter(0.00015 / 2.925  , 'S/cm2') # 0.0015
         },
         'CaT':
         {

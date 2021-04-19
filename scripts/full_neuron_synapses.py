@@ -1,7 +1,5 @@
 from random import randint, uniform, seed
-from neuron import h
-from neuron.units import ms, mV
-import matplotlib.pyplot as plt
+from neuron import h from neuron.units import ms, mV import matplotlib.pyplot as plt
 from matplotlib import cm
 import numpy as np
 import os
@@ -47,9 +45,10 @@ Synapse.plot_synapses_locs(var='gcalbar_cal')
 
 
 train_stim = trains_stim( h.soma[0](.5), per=20, delay=200,  n=params['Simulation']['#spikes'].value,
-        amp=1.2, dur=10)
+        amp=12, dur=10)
 train_stim.num = 25
 ipulses = h.Vector().record(train_stim._ref_i)
+
 
 t = h.Vector().record(h._ref_t)
 ica = h.Vector().record(ad(.5)._ref_ica)

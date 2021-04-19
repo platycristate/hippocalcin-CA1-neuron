@@ -3,7 +3,7 @@ NEURON {
 	USEION ca READ cao, ica, cai  WRITE cai, ica
 	USEION k READ ek WRITE ik
 	RANGE HPCA_m_z, ca, ica_pmp, ica_basal, gbar, ik
-	GLOBAL Ra, cai0,  Rb, caix,q10, temp, tadj, vmin, vmax
+	GLOBAL Ra, cai0,  Rb, q10, temp, tadj
 	THREADSAFE
 }
 
@@ -29,26 +29,23 @@ PARAMETER {
 	D = 40 (um2/s)
 	
 	Bufer0 = 0.180 (mM) : initial concentration of the buffer
-	k1bufer = 10 (/mM-ms)
-	k2bufer = 1 (/ms)
+	k1bufer = 142 (/mM-ms)
+	k2bufer = 0.1 (/ms)
 	
 	k1Pump = 1 (/mM-ms)
 	k2Pump = 0.0003 (/ms)
 	k3Pump = 1 (/ms)
 	k4Pump = 0.0003 (/mM-ms)
-	TotalPump = 1e-11 (mol/cm2)
+	TotalPump = 3.33e-12 (mol/cm2)
 	cai0 = 50e-6 (mM) : initial [Ca2+]_i, 110 * 10^(-6) mM = 110 nM.
-	tau_d = 200 (ms)
 	delta = 0.1 (um)
+	C = 1	    (1) :tranfer coefficient for HPCAm to current
 	
 	gbar = 600   	(pS/um2) : where does this come from? = 60 mS / cm2 = 0.06 S/cm2
-	caix = 1
 	Ra   = 0.01	(cm2/mol-ms)
 	Rb   = 0.02	(/ms)
 	temp = 36	(degC)
 	q10  = 2.3        : temperature adjustment parameter
-	vmin = -120	(mV)
-	vmax = 100	(mV)
 }
 
 ASSIGNED {
@@ -68,8 +65,8 @@ ASSIGNED {
     parea (um)
     a		    (/ms)
     b		    (/ms)
-    ik		    (mA/cm2)
-    gk		    (pS/um2)
+    ik		    (mA/cm2) 
+    gk		    (pS/um2) 
     ek		    (mV)
     ninf
     ntau 	    (ms)	
@@ -84,16 +81,16 @@ STATE {
 	CaHPCA  	(mM)
 	Ca2HPCA 	(mM)
 	HPCA_m		(mol/cm2)   <1e-16>
+	HPCA_z          (mM)
+    	CaHPCA_z        (mM)
+    	Ca2HPCA_z       (mM)
+    	HPCA_m_z        (mM)
+    	HPCA_tot_z      (mM)
 	
 	pump		(mol/cm2)   <1e-16>
 	pumpca		(mol/cm2)   <1e-16>
 	n
 	
-	HPCA_z          (mM)
-	CaHPCA_z        (mM)
-	Ca2HPCA_z       (mM)
-	HPCA_m_z        (mM)
-	HPCA_tot_z      (mM)
 	
 	Bufer           (mM)
 	CaBufer         (mM)
@@ -118,7 +115,10 @@ BREAKPOINT {
 	ica_pmp_last = ica_pmp
 	ica = ica_pmp 
 	SOLVE states1 METHOD cnexp
-	gk = tadj*gbar*n
+	IF ((HPCA_m_z/HPCA_tot_z) > 0.05){
+	    gk = tadj*gbar*C*((HPCA_m_z/ HPCA_tot_z) - 0.0497)
+	}
+	ELSE {gk = 0}
 	ik = (1e-4) * gk * (v - ek) : (1e-4) converts pS/um2 to S/cm2
 }
 
@@ -137,14 +137,14 @@ KINETIC scheme1 {
     r = diam/2
     Vol = PI*r*r
     ica_basal = 2*FARADAY*(k3Pump*TotalPump*cai0*(1e5)/(k2Pump/k1Pump))
-    k_ins = (1e-3)*(D * 0.07) / ( r^2 )
+    k_ins = (1e-3)*(D * 0.07)/(r^2)
 
     :multiplies right hand-sides of diff. equations by the volume
     COMPARTMENT (1e10)*parea {pump pumpca HPCA_m}
     COMPARTMENT volo {cao}
     COMPARTMENT Vol {ca HPCA CaHPCA Ca2HPCA Bufer CaBufer}
     
-    :kinetic equations for the Ca2+-ATPase
+    : kinetic equations for the Ca2+-ATPase
     ~ ca + pump <-> pumpca (k1Pump*parea*(1e10), k2Pump*parea*(1e10))
     ~ pumpca <-> pump + cao (k3Pump*parea*(1e10), k4Pump*parea*(1e10))
     CONSERVE pump + pumpca = TotalPump * parea * (1e10)
@@ -167,7 +167,7 @@ KINETIC scheme1 {
 
 
 PROCEDURE rates() {  
-	a = Ra * HPCA_m * parea*(1e12)
+	a = Ra * HPCA_m * parea 
 	b = Rb
 	tadj = q10^((celsius - temp)/10)
 	ntau = 1/tadj/(a+b)

@@ -110,7 +110,7 @@ Apical tip specific capacitance.
 
 general
 v_init
--70
+-65
 Initial voltage of sections.
 
 general

@@ -439,8 +439,8 @@ proc cell_setup() {
     $o1.defvar("passive", "Cm_basal", "Cm_default","Basal specific capacitance.")
     $o1.defvar("passive", "Cm_tip", "Cm_default","Apical tip specific capacitance.")
 
-    $o1.defvar("general", "v_init", "-70","Initial voltage of sections.")
-    //$o1.defvar("general", "v_init", "-65","Initial voltage of sections.")
+    //$o1.defvar("general", "v_init", "-70","Initial voltage of sections.")
+    $o1.defvar("general", "v_init", "-65","Initial voltage of sections.")
 
 
   // SEVERELY affects experiment results

@@ -58,13 +58,15 @@ def APs_ipulses_translocation(APs, hpca, tot_hpca, filename):
     df.to_csv(params['working_dir'] + filename + '.csv')
 
 
-def run(dur=None):
+def run(dur=None, v_init=-60):
     # Set simulation parameters for the experiment
     # initialization
-    h.finitialize(h.v_init);
+    h.finitialize(v_init)
+    h.current_balance(v_init)
     h.dt = 1e1
     h.t = -1e6
     # if cvode is on, turn it off to do large fixed step
+
     temp = h.cvode.active()
     if temp != 0:
         h.cvode.active(0)
