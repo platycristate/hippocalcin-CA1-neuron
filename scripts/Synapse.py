@@ -1,26 +1,25 @@
-from random import randint, uniform, seed
-from neuron import h, gui
+from random import randint, uniform, seed 
+from neuron import h
 from neuron.units import ms, mV
-import matplotlib.pyplot as plt
-from matplotlib import cm
-from matplotlib import style
-from matplotlib import style, rc
-import numpy as np
+import matplotlib.pyplot as plt 
+from matplotlib import cm 
+import numpy as np 
+import os 
 import pickle
+from instrumentation import * 
+from hpca_config import *
 
-# 666
 
 class Synapse:
 
     num_synapses = 0
-    gmax_AMPA = 0.001 * 100
-    gmax_NMDA = 0.7 * 0.001 * 100
+    gmax_AMPA = 0.001 * 50
+    gmax_NMDA = 0.7 * 0.001 * 50
     synapses_instances = []
 
-    stimulator = h.VecStim()
 
     def __init__(self, loc):
-        '''Create AMPA/NMDA synapse at given location ('loc' argument)
+        '''Create AMPA/NMDA synapse at a given location ('loc' argument)
         '''
         self.loc = loc # location of the synapse
         self.GluSyn = h.SimpleAMPA_NMDA(self.loc)
@@ -28,15 +27,21 @@ class Synapse:
         self.GluSyn.gmax_NMDA = Synapse.gmax_NMDA
         Synapse.num_synapses += 1
 
-        self.connection = h.NetCon(Synapse.stimulator, self.GluSyn)
-        self.connection.weight[0] = 1
-        
-        # add new instance of the synapse to the list of synapses
+        # add new instance of the synapse to the list 
         Synapse.synapses_instances.append(self)
 
     def __repr__(self):
         return 'Synapse[{}]'.format(self.loc)
 
+    @staticmethod
+    def create_stim(syns):
+        '''Creates stimulator instance for given synapses
+        '''
+        stimulator = h.VecStim()
+        for syn in syns:
+            syn.connection = h.NetCon(stimulator, syn.GluSyn)
+            syn.connection.weight[0] = 1
+        return stimulator
 
     @classmethod
     def setup_gmax(cls, gmax_AMPA_new=0, gmax_NMDA_new=0):
@@ -46,12 +51,13 @@ class Synapse:
         Synapse.gmax_NMDA = gmax_NMDA_new
 
 
-    @classmethod
-    def play_stimulation(cls, spike_times):
-        '''Presynaptic stimulation of all Synapse instances
+    @staticmethod
+    def play_stimulation(stimulator, spike_times):
+        '''Presynaptic stimulation of synapses specified in
+        create_stim()
         '''
         spikes_vector = h.Vector(spike_times)
-        cls.stimulator.play(spikes_vector)
+        stimulator.play(spikes_vector)
 
 
     @classmethod
@@ -83,20 +89,19 @@ class Synapse:
             syns = [cls(h.apical_dendrite[randint(0, 118)](uniform(0, 1))) for i in range(num_rand_locs)]
             return syns
 
-    @classmethod
-    def plot_synapses_locs(cls, colormap='jet', var='v'):
+    @staticmethod
+    def plot_synapses_locs(synapses_groups, colors, colormap='Dark2'):
         '''Plot location of the synapses in the dendritics tree
         '''
         plot_stmnt = 'ps.plot(plt, cmap=cm.' + colormap + ').'
         ps = h.PlotShape()
-        ps.variable(var)
-        ps.scale(-70, 10)
-        for synapse in cls.synapses_instances:
-            plot_stmnt += 'mark(h.' + str(synapse.loc) + ').'
-        plot_stmnt += 'mark(h.soma[0](.5), "s")'
+        for group, color in zip(synapses_groups, colors):
+            for synapse in group:
+                plot_stmnt += 'mark(h.%s, "o%s").' % (str(synapse.loc), color)
+        plot_stmnt=plot_stmnt[:-1]
+        #plot_stmnt += 'mark(h.soma[0](.5), "s")'
         eval(plot_stmnt)
-        plt.xlabel('$\mu m$', fontsize=16)
-        plt.ylabel('$\mu m$', fontsize=16)
+        plt.xlabel('мкм', fontsize=16)
+        plt.ylabel('мкм', fontsize=16)
         ps.show(0) # enable displaying of diameters ps.variable('v')
         print('Plotting locations of the synapses in the dendritic tree!')
-        plt.show()

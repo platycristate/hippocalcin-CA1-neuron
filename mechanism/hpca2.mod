@@ -115,8 +115,8 @@ BREAKPOINT {
 	ica_pmp_last = ica_pmp
 	ica = ica_pmp 
 	SOLVE states1 METHOD cnexp
-	IF ((HPCA_m_z/HPCA_tot_z) > 0.05){
-	    gk = tadj*gbar*C*((HPCA_m_z/ HPCA_tot_z) - 0.0497)
+	IF ((HPCA_m_z/HPCA_tot_z) > 0.08){
+	    gk = gbar*C*((HPCA_m_z/ HPCA_tot_z) - 0.079)
 	}
 	ELSE {gk = 0}
 	ik = (1e-4) * gk * (v - ek) : (1e-4) converts pS/um2 to S/cm2
