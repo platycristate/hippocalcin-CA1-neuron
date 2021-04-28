@@ -16,10 +16,12 @@ for s in h.allsec():
     s.uninsert('kca')
     if h.ismembrane('hha2'):
         for seg in s:
-            seg.hha2.gkbar *= 5
+            print(seg.hha2.gkbar)
+            seg.hha2.gkbar = params['HH_IK']['gkbar_soma'].value
     if 'hha_old' in mechs:
         for seg in s:
-            seg.hha_old.gkbar *= 5
+            print(seg.hha_old.gkbar)
+            seg.hha2.gkbar = params['HH_IK']['gkbar_dend'].value
     if 'apical_dendrite' in str(s) or 'soma' in str(s):
         s.uninsert('cad')
         s.insert('hpca2')
@@ -28,20 +30,8 @@ for s in h.allsec():
         for seg in s:
             seg.cal.gcalbar = params['CaL']['gcalbar_dendrite'].value
 
-h.TotalHPCA_hpca2 = 0.03 #params['HPCA']['HPCA0'].value
-h.C_hpca2 = 0.1
-h.k_out_hpca2 = params['HPCA']['k_out'].value
-h.TotalPump_hpca2 = params['HPCA']['Pump0'].value
-h.Bufer0_hpca2 = params['HPCA']['Buffer0'].value
-h.k1bufer_hpca2 = params['HPCA']['k1B'].value
-h.k2bufer_hpca2 = params['HPCA']['k2B'].value
-h.k1Pump_hpca2 = params['HPCA']['k1P'].value
-h.k2Pump_hpca2 = params['HPCA']['k2P'].value
-h.k3Pump_hpca2 = params['HPCA']['k3P'].value
-h.k4Pump_hpca2 = params['HPCA']['k4P'].value
+h.C_hpca2 = params['HPCA']['C'].value
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
-ad.diam = params['Neuron']['diam'].value
-ad.L = params['Neuron']['length'].value
 
 print(ad.psection()['density_mechs'].keys())
 sc = seclamp_stim( h.soma[0](.5) )
@@ -68,4 +58,4 @@ axs[2].set_title('$I_{K, \ HPCA}$ (мА/см$^2$)', fontsize=14)
 axs[2].set_xlabel('Час (с)', fontsize=14)
 fig.tight_layout()
 plt.show()
-fig.savefig('../../Diplom/images/example_response.png')
+#fig.savefig('../../Diplom/images/example_response.png')

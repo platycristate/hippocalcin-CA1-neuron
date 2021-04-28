@@ -39,7 +39,7 @@ params = { 'working_dir': 'reproducing-experiments/22Apr2021/',
              # HPCA 
              'HPCA0': Parameter(0.03, "mM"),
              'k_out': Parameter(0.002, "/ms"),
-             'C': Parameter(1, "none"),
+             'C': Parameter(0.1, "none"),
 
              # initial Ca2+
              'Ca_i': Parameter(1500*10**(-6), "mM")
@@ -49,6 +49,11 @@ params = { 'working_dir': 'reproducing-experiments/22Apr2021/',
         {
             # 12 s tau_out for neurocalcin
             'k_out': Parameter(1/12000, "/ms")
+        },
+        'HH_IK':
+        {
+            'gkbar_dend': Parameter(0.00086*5, "mS/cm2"),
+            'gkbar_soma': Parameter(0.00092876*5, "mS/cm2")
         },
         'CaL':
         {

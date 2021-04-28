@@ -33,6 +33,14 @@ class Synapse:
     def __repr__(self):
         return 'Synapse[{}]'.format(self.loc)
 
+
+    @classmethod
+    def del_all(cls):
+        '''Delete all synapses instances
+        '''
+        Synapse.synapses_instances = []
+        Synapse.num_synapses = 0
+
     @staticmethod
     def create_stim(syns):
         '''Creates stimulator instance for given synapses
