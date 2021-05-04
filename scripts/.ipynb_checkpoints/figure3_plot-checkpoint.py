@@ -4,6 +4,7 @@ import pickle
 import numpy as np
 import pandas as pd
 from scipy.optimize import curve_fit
+%matplotlib inline
 
 plt.style.use('seaborn-whitegrid')
 
@@ -24,15 +25,15 @@ popt2, _2 = curve_fit(func, f2["C"], f2["ratio"], maxfev=2000)
 plt.figure(dpi=150, figsize=(8, 8))
 
 plt.plot(f["C"], f["ratio"], "o", label='20 Гц', markersize=5)
-plt.plot(f["C"], func( f["C"], *popt), '-', lw=1.4, label="Фітування для 20 Гц")
+plt.plot(f["C"], func( f["C"], *popt), '-', lw=1.2)
 
 plt.plot(f2["C"], f2["ratio"], "o", label='50 Гц', markersize=5)
-plt.plot(f2["C"], func( f2["C"], *popt2), '-', lw=1.4, label="Фітування для 50 Гц")
+plt.plot(f2["C"], func( f2["C"], *popt2), '-', lw=1.2)
 
 plt.xlabel("С", fontsize=16)
 plt.ylabel("$Q/Q_0$", fontsize=15, labelpad=10).set_rotation(0)
-plt.legend(fontsize=16) ;
+plt.legend(title="Частота стимуляції", fontsize=16) ;
 plt.tight_layout()
-plt.savefig('../../Diplom/images/C_charge.png')
+#plt.savefig('../../Diplom/images/C_charge.png')
 plt.show()
 
