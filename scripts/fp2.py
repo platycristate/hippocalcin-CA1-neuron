@@ -2,13 +2,13 @@
 from random import randint, uniform, seed 
 from neuron import h
 from neuron.units import ms, mV
-import matplotlib.pyplot as plt 
-from matplotlib import cm 
-import numpy as np 
-import os 
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import numpy as np
+import os
 import pickle
-from instrumentation import * 
-from hpca_config import * 
+from instrumentation import *
+from hpca_config import *
 from Synapse import Synapse
 
 plt.style.use('seaborn-whitegrid')
@@ -25,11 +25,9 @@ for s in h.allsec():
     s.uninsert('kca')
     if h.ismembrane('hha2'):
         seg.hha2.gkbar *= 5
-        #seg.hha2.gnabar /= 3
     if 'hha_old' in mechs:
         for seg in s:
             seg.hha_old.gkbar *= 5
-            #seg.hha_old.gnabar /= 3
     if 'apical_dendrite' in str(s) or 'soma' in str(s):
         s.uninsert('cad')
         s.insert('hpca2')
@@ -38,11 +36,12 @@ for s in h.allsec():
         for seg in s:
             seg.cal.gcalbar = params['CaL']['gcalbar_dendrite'].value
 
+
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
 ic = h.IClamp(h.soma[0](.5))
 ic.delay = 100 * ms
-ic.dur = 100 * ms
-ic.amp = 0.260 # nA  = 100 pa
+ic.dur = 800 * ms
+ic.amp = 0.460 # nA  = 100 pa
 
 t = h.Vector().record(h._ref_t)
 ica = h.Vector().record(ad(.5)._ref_ica)
@@ -62,18 +61,19 @@ fig, ax = plt.subplots(1, 1, dpi=150, figsize=(12, 16))
 
 ##PARAMETERS##############
 
-h.C_hpca2 = 0.1
+h.C_hpca2 = 0.3
 h.TotalHPCA_hpca2 = 0.03
 
 ##########################
 
-run(dur=12000, v_init=-62)
+run(dur=1000, v_init=-62)
 
 ax.plot(t, v, color='black')
-ax.set_ylabel('мВ', fontsize=16)
-ax.set_xlabel('час (мс)', fontsize=16)
+ax.set_ylabel('mV', fontsize=16)
+ax.set_xlabel('Time (ms)', fontsize=16)
 #ax[2].plot(t, (hpca/tot_hpca)*100, color='red')
 #ax[2].set(xlabel='time [s]', ylabel='%')
 #plt.savefig(params['working_dir'] + 'fp5_0p1_62mV.pdf')
 #plt.savefig('../../Diplom/images/fp2.png')
+plt.savefig('/home/arsentii/DynSysUkraine/images/firing_pattern_new.png')
 plt.show()

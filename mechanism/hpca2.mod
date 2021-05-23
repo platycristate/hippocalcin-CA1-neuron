@@ -91,7 +91,6 @@ STATE {
 	pumpca		(mol/cm2)   <1e-16>
 	n
 	
-	
 	Bufer           (mM)
 	CaBufer         (mM)
 }

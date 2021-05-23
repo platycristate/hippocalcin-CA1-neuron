@@ -57,7 +57,7 @@ for i in central:
 Synapse.setup_gmax(
     gmax_AMPA_new=0.001 * 80,
     gmax_NMDA_new = 0.001 * 0.7 * 80
-)
+    )
 
 Synapse.gmax_AMPA /= len(distal)
 Synapse.gmax_NMDA /= len(distal)

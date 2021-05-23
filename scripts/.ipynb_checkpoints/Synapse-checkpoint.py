@@ -1,12 +1,12 @@
-from random import randint, uniform, seed
+from random import randint, uniform, seed 
 from neuron import h
 from neuron.units import ms, mV
-import matplotlib.pyplot as plt
-from matplotlib import cm
-import numpy as np
-import os
+import matplotlib.pyplot as plt 
+from matplotlib import cm 
+import numpy as np 
+import os 
 import pickle
-from instrumentation import *
+from instrumentation import * 
 from hpca_config import *
 
 
@@ -109,7 +109,7 @@ class Synapse:
         plot_stmnt=plot_stmnt[:-1]
         #plot_stmnt += 'mark(h.soma[0](.5), "s")'
         eval(plot_stmnt)
-        plt.xlabel('$\\mu m$', fontsize=16)
-        plt.ylabel('$\\mu m$', fontsize=16)
+        plt.xlabel('мкм', fontsize=16)
+        plt.ylabel('мкм', fontsize=16)
         ps.show(0) # enable displaying of diameters ps.variable('v')
         print('Plotting locations of the synapses in the dendritic tree!')

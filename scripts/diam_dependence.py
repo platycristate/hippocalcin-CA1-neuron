@@ -11,31 +11,22 @@ plt.style.use('seaborn-whitegrid')
 #------------------------INITIALIZTION----------------------- 
 econ = initialize() # initialize pyramidal CA1 neuron from Poirazi 2003
 
-ad = eval(params['Simulation']['section'].value)
+ad = select_section(h.apical_dendrite[8])
+print(ad)
+ad.uninsert('cad')
+ad.insert('hpca2')
+ad.uninsert('car')
+ad.insert('cal')
+ad.diam = 7
 
-for s in h.allsec():
-    mechs = s.psection()['density_mechs'].keys()
-    s.uninsert('kca')
-    if h.ismembrane('hha2'):
-        for seg in s:
-            seg.hha2.gkbar = params['HH_IK']['gkbar_soma'].value
-    if 'hha_old' in mechs:
-        for seg in s:
-            seg.hha_old.gkbar = params['HH_IK']['gkbar_dend'].value
-    if 'apical_dendrite' in str(s) or 'soma' in str(s):
-        s.uninsert('cad')
-        s.insert('hpca2')
-        s.uninsert('car')
-        s.insert('cal')
-        for seg in s:
-            seg.cal.gcalbar = params['CaL']['gcalbar_dendrite'].value
-
+for seg in ad:
+    seg.cal.gcalbar = params['CaL']['gcalbar_dendrite'].value
 
 h.C_hpca2 = params['HPCA']['C'].value
 h.cai0_hpca2 = params['HPCA']['Ca_i'].value
 
 #print(ad.psection()['density_mechs'].keys())
-sc = seclamp_stim( h.soma[0](.5) )
+sc = seclamp_stim( ad(.5) )
 sc.dur1 = 1000
 sc.dur2 = 4000
 

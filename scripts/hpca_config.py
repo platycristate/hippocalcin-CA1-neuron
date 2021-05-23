@@ -11,14 +11,14 @@ import numpy as np
 
 from NeuroTools.parameters import Parameter
 
-params = { 'working_dir': 'reproducing-experiments/22Apr2021/', 
+params = { 'working_dir': 'reproducing-experiments/22Apr2021/',
            'filename': 'ipulses100_diam_dependence.pdf',
         'Simulation':
         {
             'duration': Parameter(8000, "ms"),
             'dep_loc': Parameter('h.apical_dendrite[7](.5)'),
             'dep_dur': Parameter(2000, "ms"),
-            '#spikes': Parameter(100), 
+            '#spikes': Parameter(100),
             'dt': Parameter(0.1, 'ms'),
             'section':Parameter('h.apical_dendrite[7]')
         },
